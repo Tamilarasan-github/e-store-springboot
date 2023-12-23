@@ -1,0 +1,41 @@
+type Query{
+	getAllProducts(productName : String, first: Int, after: String) : ProductConnection
+	getAllActiveProducts(productName : String, first: Int, after: String) : ProductConnection
+}
+
+type ProductConnection {
+  pageInfo: PageInfo!
+  edges: [ProductEdge!]
+}
+
+type ProductEdge {
+  cursor: String
+  node: Product
+}
+
+type Product
+{
+productId :  Int!
+seller :  Seller
+productCode :  String!
+productName :  String!
+productTitle :  String!
+productCondition :  String!
+description :  String!
+productStatus :  String!
+productCategoryId :  Int!
+brandName :  String!
+imageUrl :  String!
+availabilityStatus :  Boolean!
+stockQuantity :  String!
+createdDate :  String!
+updatedDate :  String
+createdBy :  String!
+updatedBy :  String
+deleteFlag :  Boolean!
+comments :  String
+}
+
+
+
+
