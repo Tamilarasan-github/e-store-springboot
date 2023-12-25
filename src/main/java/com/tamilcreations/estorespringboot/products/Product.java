@@ -1,6 +1,7 @@
 package com.tamilcreations.estorespringboot.products;
 
 import java.util.Date;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 
 import org.springframework.stereotype.Component;
 
@@ -31,10 +31,14 @@ import lombok.Setter;
 @Table(name="Products")
 public class Product
 {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "product_id")
 	private Long productId;
+	
+	 @Column(name = "uuid", columnDefinition = "CHAR(36)")
+	 private String uuid;
 	
 	@ManyToOne
 	@JoinColumn(name = "seller_id")
@@ -60,20 +64,14 @@ public class Product
 	@Column(name = "product_status")
 	private String productStatus;
 	
-	@Column(name = "product_category_id")
-	private Long productCategoryId;
+	@Column(name = "product_sub_category_id")
+	private Long productSubCategoryId;
 	
 	@Column(name = "brand_name")
 	private String brandName;
 	
 	@Column(name = "image_url")
 	private String imageUrl;
-	
-	@Column(name = "availability_status")
-	private boolean availabilityStatus;
-	
-	@Column(name = "stock_quantity")
-	private int stockQuantity;
 	
 	@Column(name = "created_date")
 	private Date createdDate;
@@ -101,6 +99,18 @@ public class Product
 	public void setProductId(Long productId)
 	{
 		this.productId = productId;
+	}
+	
+	
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
 	}
 
 	public Seller getSeller()
@@ -173,14 +183,14 @@ public class Product
 		this.productStatus = productStatus;
 	}
 
-	public Long getProductCategoryId()
+	public Long getProductSubCategoryId()
 	{
-		return productCategoryId;
+		return productSubCategoryId;
 	}
 
-	public void setProductCategoryId(Long productCategoryId)
+	public void setProductCategoryId(Long productSubCategoryId)
 	{
-		this.productCategoryId = productCategoryId;
+		this.productSubCategoryId = productSubCategoryId;
 	}
 
 	public String getBrandName()
@@ -203,26 +213,7 @@ public class Product
 		this.imageUrl = imageUrl;
 	}
 
-	public boolean isAvailabilityStatus()
-	{
-		return availabilityStatus;
-	}
-
-	public void setAvailabilityStatus(boolean availabilityStatus)
-	{
-		this.availabilityStatus = availabilityStatus;
-	}
-
-	public int getStockQuantity()
-	{
-		return stockQuantity;
-	}
-
-	public void setStockQuantity(int stockQuantity)
-	{
-		this.stockQuantity = stockQuantity;
-	}
-
+	
 	public Date getCreatedDate()
 	{
 		return createdDate;
