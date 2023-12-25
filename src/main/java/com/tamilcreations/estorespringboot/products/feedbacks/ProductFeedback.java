@@ -60,11 +60,7 @@ public class ProductFeedback
 	
 	@Column(name = "down_votes")
 	private int downVotes;
-	
-	@OneToMany
-	@JoinColumn(name = "product_feedback_reply_id")
-	private List<ProductFeedbackReply> productFeedbackReply;
-	
+		
 	@Column(name = "created_date")
 	private Date createdDate;
 	

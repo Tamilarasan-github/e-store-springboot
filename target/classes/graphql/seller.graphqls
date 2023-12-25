@@ -1,0 +1,33 @@
+extend type Query{
+	getSeller(sellerId : Int) : Seller
+	getSellers(first: Int, after: String) : SellerConnection
+}
+
+type SellerConnection {
+  pageInfo: PageInfo!
+  edges: [SellerEdge!]
+}
+
+type SellerEdge {
+  cursor: String
+  node: Seller
+}
+
+type Seller
+{
+sellerId :  Int!
+sellerName :  String!
+sellerAccountStatus :  String!
+phoneNumber :  String!
+alternatePhoneNumber :  String!
+emailId :  String!
+panNumber :  String!
+gstVerificationNumber :  String!
+verificationStatus :  String!
+createdDate :  String!
+updatedDate :  String
+createdBy :  String!
+updatedBy :  String
+deleteFlag :  Boolean!
+comments :  String
+}
