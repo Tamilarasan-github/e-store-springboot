@@ -3,6 +3,11 @@ extend type Query{
 	getSellers(first: Int, after: String) : SellerConnection
 }
 
+extend type Mutation
+{
+	addNewSeller(sellerInput: SellerInput!): Seller!
+}
+
 type SellerConnection {
   pageInfo: PageInfo!
   edges: [SellerEdge!]
@@ -29,5 +34,24 @@ updatedDate :  String
 createdBy :  String!
 updatedBy :  String
 deleteFlag :  Boolean!
+comments :  String
+}
+
+input SellerInput
+{
+sellerId :  Int
+sellerName :  String
+sellerAccountStatus :  String
+phoneNumber :  String
+alternatePhoneNumber :  String
+emailId :  String
+panNumber :  String
+gstVerificationNumber :  String
+verificationStatus :  String
+createdDate :  String
+updatedDate :  String
+createdBy :  String
+updatedBy :  String
+deleteFlag :  Boolean
 comments :  String
 }

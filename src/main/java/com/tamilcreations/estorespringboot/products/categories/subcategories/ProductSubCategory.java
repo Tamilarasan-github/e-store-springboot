@@ -34,6 +34,9 @@ public class ProductSubCategory
 	@Column(name = "sub_category_id")
 	private Long subCategoryId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private ProductCategory productCategory;

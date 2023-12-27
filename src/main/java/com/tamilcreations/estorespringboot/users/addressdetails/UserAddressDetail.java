@@ -36,6 +36,9 @@ public class UserAddressDetail
 	@Column(name = "user_address_details_id")
 	private Long userAddressDetailsId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

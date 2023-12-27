@@ -37,6 +37,9 @@ public class ProductFeedbackReply
 	@Column(name = "product_feedback_reply_id")
 	private Long productFeedbackReplyId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@ManyToOne
 	@JoinColumn(name = "product_feedback_id")
 	private ProductFeedback productFeedback;

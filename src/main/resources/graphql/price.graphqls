@@ -1,0 +1,57 @@
+extend type Query{
+	getPriceByProductIdForNow(productId : Int!) : PriceResponse
+	getPriceByProductUuidForNow(productUuid : String!) : PriceResponse
+	getPricesListByProductUuid(productUuid : String) : PriceResponse
+}
+
+extend type Mutation{
+	addNewPrice(priceInput : PriceInput) : PriceResponse!
+	updateExistingPrice(priceInput : PriceInput) : PriceResponse!
+}
+
+type Price
+{
+priceId :  Int!
+uuid : String
+product :  Product!
+totalPricePerUnit :  Float!
+taxIncluded :  Boolean!
+taxType :  String!
+taxPercentage :  Float
+currency :  String!
+priceEffectiveDate :  String!
+priceTermDate :  String
+createdDate :  String!
+updatedDate :  String
+createdBy :  String!
+updatedBy :  String
+deleteFlag :  Boolean!
+comments :  String
+}
+
+input PriceInput
+{
+uuid : String
+product :  ProductInput
+totalPricePerUnit :  Float
+taxIncluded :  Boolean
+taxType :  String
+taxPercentage :  Float
+currency :  String!
+priceEffectiveDate :  String
+priceTermDate :  String
+createdDate :  String
+updatedDate :  String
+createdBy :  String
+updatedBy :  String
+deleteFlag :  Boolean
+comments :  String
+}
+
+type PriceResponse
+{
+ prices : [Price]
+ errorMessage : String
+ successMessage : String
+}
+

@@ -40,6 +40,9 @@ public class ProductFeedback
 	@Column(name = "product_feedback_id")
 	private Long productFeedbackId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
