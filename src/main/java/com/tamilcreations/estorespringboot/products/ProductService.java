@@ -38,4 +38,9 @@ public class ProductService
 			return productRepo.getAllActiveProducts(productName, first, CursorUtils.decodeCursor(after));
 		}
 	}
+	
+	public Product addNewProduct(Product product)
+	{
+		return productRepo.save(product);
+	}
 }

@@ -30,6 +30,8 @@ public class Seller
 	@Column(name = "seller_id")
 	private Long sellerId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
 	
 	@Column(name = "seller_name")
 	private String sellerName;
@@ -72,6 +74,8 @@ public class Seller
 	
 	@Column(name = "comments")
 	private String comments;
+	
+	
 
 	public Long getSellerId()
 	{
@@ -81,6 +85,18 @@ public class Seller
 	public void setSellerId(Long sellerId)
 	{
 		this.sellerId = sellerId;
+	}
+	
+	
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
 	}
 
 	public String getSellerName()

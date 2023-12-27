@@ -3,6 +3,11 @@ type Query{
 	getAllActiveProducts(productName : String, first: Int, after: String) : ProductConnection
 }
 
+type Mutation
+{
+	addNewProduct(productInput: ProductInput!) : Product!
+}
+
 type ProductConnection {
   pageInfo: PageInfo!
   edges: [ProductEdge!]
@@ -16,6 +21,7 @@ type ProductEdge {
 type Product
 {
 productId :  Int!
+uuid: String
 seller :  Seller
 productCode :  String!
 productName :  String!
@@ -23,14 +29,36 @@ productTitle :  String!
 productCondition :  String!
 description :  String!
 productStatus :  String!
-productSubCategoryId :  Int!
+productSubCategoryId : Int!
 brandName :  String!
 imageUrl :  String!
-createdDate :  String!
+createdDate :  String
 updatedDate :  String
 createdBy :  String!
 updatedBy :  String
 deleteFlag :  Boolean!
+comments :  String
+}
+
+input ProductInput
+{
+productId :  Int
+uuid: String
+seller :  SellerInput
+productCode :  String
+productName :  String
+productTitle :  String
+productCondition :  String
+description :  String
+productStatus :  String
+productSubCategoryId : Int
+brandName :  String
+imageUrl :  String
+createdDate :  String
+updatedDate :  String
+createdBy :  String
+updatedBy :  String
+deleteFlag :  Boolean
 comments :  String
 }
 

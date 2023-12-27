@@ -1,0 +1,20 @@
+extend type Query{
+	getDiscounts(productId: Int) : [Discount]
+}
+
+type Discount
+{
+discountId :  Int!
+product :  Product
+discountType :  String!
+discountAmount :  Float!
+discountPercentage :  Float!
+discountEffectiveDate :  String!
+discountTermDate :  String
+createdDate :  String!
+updatedDate :  String
+createdBy :  String!
+updatedBy :  String
+deleteFlag :  Boolean!
+comments :  String
+}

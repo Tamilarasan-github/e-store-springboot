@@ -34,6 +34,9 @@ public class ProductCategory
 	@Column(name = "category_id")
 	private Long categoryId;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@Column(name = "category_name")
 	private String categoryName;
 	

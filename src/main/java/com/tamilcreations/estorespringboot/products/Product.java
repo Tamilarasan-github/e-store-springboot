@@ -65,7 +65,7 @@ public class Product
 	private String productStatus;
 	
 	@Column(name = "product_sub_category_id")
-	private Long productSubCategoryId;
+	private int productSubCategoryId;
 	
 	@Column(name = "brand_name")
 	private String brandName;
@@ -183,12 +183,12 @@ public class Product
 		this.productStatus = productStatus;
 	}
 
-	public Long getProductSubCategoryId()
+	public int getProductSubCategoryId()
 	{
 		return productSubCategoryId;
 	}
 
-	public void setProductCategoryId(Long productSubCategoryId)
+	public void setProductSubCategoryId(int productSubCategoryId)
 	{
 		this.productSubCategoryId = productSubCategoryId;
 	}

@@ -35,6 +35,9 @@ public class SellerAddressDetail
 	@Column(name = "seller_address_details_Id")
 	private Long sellerAddressDetails;
 	
+	@Column(name = "uuid")
+	private String uuid;	
+	
 	@ManyToOne
 	@JoinColumn(name = "seller_id")
 	private Seller seller;

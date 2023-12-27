@@ -1,6 +1,7 @@
 package com.tamilcreations.estorespringboot.products;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -8,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepo extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product>
 {
+	@Query(value="SELECT * FROM Products p where p.uuid = :productUuid ", nativeQuery=true)
+	Optional<Product> findProductByUuid(String productUuid);
 	
 	@Query(value="SELECT * FROM Products p where p.product_name LIKE :productName ORDER BY p.product_id ASC LIMIT :limit", nativeQuery=true)
 	List<Product> getAllProducts(String productName, int limit);
