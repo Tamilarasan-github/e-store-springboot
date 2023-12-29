@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tamilcreations.estorespringboot.generic.CursorUtils;
 
@@ -14,7 +15,7 @@ public class ProductService
 	@Autowired
 	ProductRepo productRepo;
 	
-	
+	@Transactional
 	public List<Product> getAllProducts(String productName, int first, String after)
 	{
 		if(after==null)
@@ -27,6 +28,7 @@ public class ProductService
 		}
 	}
 	
+	@Transactional
 	public List<Product> getAllActiveProducts(String productName, int first, String after)
 	{
 		if(after==null)
@@ -39,6 +41,7 @@ public class ProductService
 		}
 	}
 	
+	@Transactional
 	public Product addNewProduct(Product product)
 	{
 		return productRepo.save(product);

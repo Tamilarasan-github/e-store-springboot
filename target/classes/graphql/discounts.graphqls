@@ -1,10 +1,18 @@
 extend type Query{
-	getDiscounts(productId: Int) : [Discount]
+	getDiscountByProductIdForNow(productId : Int!) : DiscountResponse
+	getDiscountByProductUuidForNow(productUuid : String!) : DiscountResponse
+	getDiscountsListByProductUuid(productUuid : String) : DiscountResponse
+}
+
+extend type Mutation{
+	addNewDiscount(discountInput : DiscountInput) : DiscountResponse!
+	updateExistingDiscount(discountInput : DiscountInput) : DiscountResponse!
 }
 
 type Discount
 {
 discountId :  Int!
+uuid: String
 product :  Product
 discountType :  String!
 discountAmount :  Float!
@@ -17,4 +25,30 @@ createdBy :  String!
 updatedBy :  String
 deleteFlag :  Boolean!
 comments :  String
+}
+
+input DiscountInput
+{
+discountId :  Int
+uuid: String
+product :  ProductInput
+discountType :  String
+discountAmount :  Float
+discountPercentage :  Float
+discountEffectiveDate :  String
+discountTermDate :  String
+createdDate :  String
+updatedDate :  String
+createdBy :  String
+updatedBy :  String
+deleteFlag :  Boolean
+comments :  String
+}
+
+type DiscountResponse
+{
+ discount : Discount
+ discounts : [Discount]
+ errorMessage : String
+ successMessage : String
 }

@@ -18,7 +18,7 @@ public class UserController
 	UserService userService;
 	
 	@QueryMapping
-	public User getUser(@Argument long userId)
+	public User getUser(@Argument long userId) throws Exception
 	{
 		return userService.getUser(userId);
 	}

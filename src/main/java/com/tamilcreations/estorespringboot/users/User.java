@@ -23,8 +23,6 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
 @Component
 @Entity
 @Table(name="Users")
@@ -49,33 +47,210 @@ public class User
 	
 	@Column(name = "email_id")
 	private String emailId;
+	
 	@Column(name = "phone_number")
 	private String phoneNumber;
+	
 	@Column(name = "gender")
 	private String gender;
+	
 	@Column(name = "date_of_birth")
 	private Date dateOfBirth;
+	
 	@Column(name = "profile_pic")
 	private String profilePic;
+	
 	@Column(name = "last_login_date")
 	private Date lastLoginDate;
+	
 	@Column(name = "user_account_status")
 	private String userAccountStatus;
-	
-	
-	@OneToOne
-	@JoinColumn(name = "seller_id")
-	private Seller seller;
-	
+		
 	@Column(name = "created_date")
 	private Date createdDate;
+	
 	@Column(name = "updated_date")
 	private Date updatedDate;
+	
 	@Column(name = "created_by")
 	private String createdBy;
+	
 	@Column(name = "updated_by")
 	private String updatedBy;
+	
 	@Column(name = "delete_flag")
 	private boolean deleteFlag;
+
+	public Long getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Long userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
+
+	public String getFirstName()
+	{
+		return firstName;
+	}
+
+	public void setFirstName(String firstName)
+	{
+		this.firstName = firstName;
+	}
+
+	public String getMiddleName()
+	{
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName)
+	{
+		this.middleName = middleName;
+	}
+
+	public String getLastName()
+	{
+		return lastName;
+	}
+
+	public void setLastName(String lastName)
+	{
+		this.lastName = lastName;
+	}
+
+	public String getEmailId()
+	{
+		return emailId;
+	}
+
+	public void setEmailId(String emailId)
+	{
+		this.emailId = emailId;
+	}
+
+	public String getPhoneNumber()
+	{
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber)
+	{
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getGender()
+	{
+		return gender;
+	}
+
+	public void setGender(String gender)
+	{
+		this.gender = gender;
+	}
+
+	public Date getDateOfBirth()
+	{
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth)
+	{
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getProfilePic()
+	{
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic)
+	{
+		this.profilePic = profilePic;
+	}
+
+	public Date getLastLoginDate()
+	{
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate)
+	{
+		this.lastLoginDate = lastLoginDate;
+	}
+
+	public String getUserAccountStatus()
+	{
+		return userAccountStatus;
+	}
+
+	public void setUserAccountStatus(String userAccountStatus)
+	{
+		this.userAccountStatus = userAccountStatus;
+	}
+
+	public Date getCreatedDate()
+	{
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate)
+	{
+		this.createdDate = createdDate;
+	}
+
+	public Date getUpdatedDate()
+	{
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(Date updatedDate)
+	{
+		this.updatedDate = updatedDate;
+	}
+
+	public String getCreatedBy()
+	{
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy)
+	{
+		this.createdBy = createdBy;
+	}
+
+	public String getUpdatedBy()
+	{
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy)
+	{
+		this.updatedBy = updatedBy;
+	}
+
+	public boolean isDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
+	}
+	
+	
 
 }

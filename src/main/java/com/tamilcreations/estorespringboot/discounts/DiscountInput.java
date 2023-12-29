@@ -195,19 +195,21 @@ public class DiscountInput
 		this.comments = comments;
 	}
 	
-	public static Discount toDiscount(DiscountInput discountInput) {		
+	public Discount toDiscount() {		
         Discount discount = new Discount();
-        discount.setUuid(discountInput.getUuid());
-        discount.setProduct(discountInput.getProduct());
-        discount.setDiscountType(discountInput.getDiscountType());
-        discount.setDiscountAmount(discountInput.getDiscountAmount());
-        discount.setDiscountPercentage(discountInput.getDiscountPercentage());
-        discount.setDiscountEffectiveDate(new GenericService().convertStringToDateFormat(discountInput.getDiscountEffectiveDate()));
-        discount.setDiscountTermDate(new GenericService().convertStringToDateFormat(discountInput.getDiscountTermDate()));
-        discount.setCreatedBy(discountInput.getCreatedBy());
-        discount.setUpdatedBy(discountInput.getUpdatedBy());
-        discount.setDeleteFlag(discountInput.isDeleteFlag());
-        discount.setComments(discountInput.getComments());
+        discount.setUuid(this.uuid);
+        discount.setProduct(this.product);
+        discount.setDiscountType(this.discountType);
+        discount.setDiscountAmount(this.discountAmount);
+        discount.setDiscountPercentage(this.discountPercentage);
+        discount.setDiscountEffectiveDate(new GenericService().convertStringToDateFormat(this.discountEffectiveDate));
+        discount.setDiscountTermDate(new GenericService().convertStringToDateFormat(this.discountTermDate));
+        discount.setCreatedBy(this.createdBy);
+        discount.setUpdatedBy(this.updatedBy);
+        discount.setCreatedDate(this.createdDate);
+        discount.setUpdatedDate(this.updatedDate);
+        discount.setDeleteFlag(this.deleteFlag);
+        discount.setComments(this.comments);
 
         return discount;
     }

@@ -1,0 +1,58 @@
+extend type Query{
+	getProductStocksByProductIdForNow(productId : Int!) : ProductStocksResponse
+	getProductStocksByProductUuidForNow(productUuid : String!) : ProductStocksResponse
+	getProductStockssListByProductUuid(productUuid : String) : ProductStocksResponse
+}
+
+extend type Mutation{
+	addNewProductStocks(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+	updateExistingProductStocks(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+}
+
+
+# Define the GraphQL type for ProductStocks
+type ProductStocks {
+  stockId: ID
+  uuid: String
+  product: Product
+  totalStocks: Int
+  availableStocks: Int
+  reservedStocks: Int
+  stocksEffectiveDate: String
+  stocksTermDate: String
+  minimumPerOrder: Int
+  maximumPerOrder: Int
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+  comments: String
+}
+
+# Define the GraphQL input type for creating or updating ProductStocks
+input ProductStocksInput {
+  stockId: ID
+  uuid: String
+  product: ProductInput
+  totalStocks: Int
+  availableStocks: Int
+  reservedStocks: Int
+  stocksEffectiveDate: String
+  stocksTermDate: String
+  minimumPerOrder: Int
+  maximumPerOrder: Int
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+  comments: String
+}
+
+type ProductStocksResponse {
+	productStocks : ProductStocks
+	productStocksList : [ProductStocks]
+	errorMessage : String
+ 	successMessage : String
+}

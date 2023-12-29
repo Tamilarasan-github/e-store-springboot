@@ -8,59 +8,42 @@ public class DiscountResponse
 	
 	private List<Discount> discounts;
 	
-	private List<String> sucessMessage;
+	private String sucessMessage;
 	
-	private List<String> errorMessages;
+	private String errorMessage;
 	
 	
-	public DiscountResponse(Discount discount, List<String> sucessMessage)
+	
+
+	public DiscountResponse(List<Discount> discounts, String sucessMessage)
+	{
+		super();
+		this.discounts = discounts;
+		this.sucessMessage = sucessMessage;
+	}
+
+	public DiscountResponse(String errorMessage)
+	{
+		super();
+		this.errorMessage = errorMessage;
+	}
+
+	public DiscountResponse(Discount discount, String sucessMessage)
 	{
 		super();
 		this.discount = discount;
 		this.sucessMessage = sucessMessage;
 	}
-
-
-
-	public DiscountResponse(List<Discount> discounts, List<String> sucessMessage, List<String> errorMessages)
-	{
-		super();
-		this.discounts = discounts;
-		this.sucessMessage = sucessMessage;
-		this.errorMessages = errorMessages;
-	}
-	
-	
-
-	public DiscountResponse(List<Discount> discounts, List<String> sucessMessage)
-	{
-		super();
-		this.discounts = discounts;
-		this.sucessMessage = sucessMessage;
-	}
-
-
 
 	public Discount getDiscount()
 	{
 		return discount;
 	}
 
-
 	public void setDiscount(Discount discount)
 	{
 		this.discount = discount;
 	}
-
-
-
-	public DiscountResponse(List<String> errorMessages)
-	{
-		super();
-		this.errorMessages = errorMessages;
-	}
-
-
 
 	public List<Discount> getDiscounts()
 	{
@@ -72,26 +55,25 @@ public class DiscountResponse
 		this.discounts = discounts;
 	}
 
-	public List<String> getSucessMessage()
+	public String getSucessMessage()
 	{
 		return sucessMessage;
 	}
 
-	public void setSucessMessage(List<String> sucessMessage)
+	public void setSucessMessage(String sucessMessage)
 	{
 		this.sucessMessage = sucessMessage;
 	}
 
-	public List<String> getErrorMessages()
+	public String getErrorMessage()
 	{
-		return errorMessages;
+		return errorMessage;
 	}
 
-	public void setErrorMessages(List<String> errorMessages)
+	public void setErrorMessage(String errorMessage)
 	{
-		this.errorMessages = errorMessages;
+		this.errorMessage = errorMessage;
 	}
-	
 	
 	
 	
