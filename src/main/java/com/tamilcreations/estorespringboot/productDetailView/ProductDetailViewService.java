@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tamilcreations.estorespringboot.generic.Constants;
 import com.tamilcreations.estorespringboot.generic.CursorUtils;
@@ -32,6 +33,7 @@ public class ProductDetailViewService
 	@Value("${message.info.discounts.offerEndsSoon}")
 	private String offerEndsSoon;
 
+	@Transactional
 	public List<ProductDetailView> getAllActiveProductDetailsWithStocksPriceAndDiscounts(String productName, int first,
 			String after, String before)
 	{

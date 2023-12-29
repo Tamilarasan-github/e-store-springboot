@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,9 @@ public class ProductFeedback
 	
 	@Column(name = "down_votes")
 	private int downVotes;
+	
+	@Transient
+	private int feedbackRepliesCount;
 		
 	@Column(name = "created_date")
 	private Date createdDate;
@@ -78,5 +82,150 @@ public class ProductFeedback
 	
 	@Column(name = "delete_flag")
 	private boolean deleteFlag;
+
+	public Long getProductFeedbackId()
+	{
+		return productFeedbackId;
+	}
+
+	public void setProductFeedbackId(Long productFeedbackId)
+	{
+		this.productFeedbackId = productFeedbackId;
+	}
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
+
+	public Product getProduct()
+	{
+		return product;
+	}
+
+	public void setProduct(Product product)
+	{
+		this.product = product;
+	}
+
+	public User getUser()
+	{
+		return user;
+	}
+
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+
+	public int getProductRating()
+	{
+		return productRating;
+	}
+
+	public void setProductRating(int productRating)
+	{
+		this.productRating = productRating;
+	}
+
+	public String getReviewComment()
+	{
+		return reviewComment;
+	}
+
+	public void setReviewComment(String reviewComment)
+	{
+		this.reviewComment = reviewComment;
+	}
+
+	public int getUpVotes()
+	{
+		return upVotes;
+	}
+
+	public void setUpVotes(int upVotes)
+	{
+		this.upVotes = upVotes;
+	}
+
+	public int getDownVotes()
+	{
+		return downVotes;
+	}
+
+	public void setDownVotes(int downVotes)
+	{
+		this.downVotes = downVotes;
+	}
+	
+	
+
+	public int getFeedbackRepliesCount()
+	{
+		return feedbackRepliesCount;
+	}
+
+	public void setFeedbackRepliesCount(int feedbackRepliesCount)
+	{
+		this.feedbackRepliesCount = feedbackRepliesCount;
+	}
+
+	public Date getCreatedDate()
+	{
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate)
+	{
+		this.createdDate = createdDate;
+	}
+
+	public Date getUpdatedDate()
+	{
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(Date updatedDate)
+	{
+		this.updatedDate = updatedDate;
+	}
+
+	public String getCreatedBy()
+	{
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy)
+	{
+		this.createdBy = createdBy;
+	}
+
+	public String getUpdatedBy()
+	{
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy)
+	{
+		this.updatedBy = updatedBy;
+	}
+
+	public boolean isDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
+	}
+	
+	
+	
 
 }

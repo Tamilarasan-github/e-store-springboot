@@ -1,0 +1,52 @@
+extend type Query
+{
+	getProductFeedbackRepliesCount(productFeedbackId: Int) : Int!
+}
+
+extend type Mutation{
+	getProductFeedbacksListByProductUuid(productUuid: String) : ProductFeedbackResponse!
+	addNewProductFeedback(productFeedbackInput : ProductFeedbackInput) : ProductFeedbackResponse!
+}
+
+
+# Define the GraphQL type for ProductFeedback
+type ProductFeedback {
+  productFeedbackId: ID
+  uuid: String
+  product: Product
+  user: User
+  productRating: Int
+  reviewComment: String
+  upVotes: Int
+  downVotes: Int
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+}
+
+# Define the GraphQL input type for creating or updating ProductFeedback
+input ProductFeedbackInput {
+  productFeedbackId : Int
+  uuid: String
+  product: ProductInput
+  user: UserInput
+  productRating: Int
+  reviewComment: String
+  upVotes: Int
+  downVotes: Int
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+}
+
+type ProductFeedbackResponse
+{
+ productFeedback : ProductFeedback
+ productFeedbacks : [ProductFeedback]
+ errorMessage : String
+ successMessage : String
+}

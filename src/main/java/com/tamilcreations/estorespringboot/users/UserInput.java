@@ -1,0 +1,251 @@
+package com.tamilcreations.estorespringboot.users;
+
+import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import org.springframework.stereotype.Component;
+
+import com.tamilcreations.estorespringboot.sellers.Seller;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserInput
+{
+	
+	private Long userId;
+	
+	
+	private String uuid;	
+	
+	
+	private String firstName;
+	
+	
+	private String middleName;
+	
+	
+	private String lastName;
+	
+	
+	private String emailId;
+	
+	
+	private String phoneNumber;
+	
+	
+	private String gender;
+	
+	
+	private Date dateOfBirth;
+	
+	
+	private String profilePic;
+	
+	
+	private Date lastLoginDate;
+	
+	
+	private String userAccountStatus;
+		
+	
+	private Date createdDate;
+	
+	
+	private Date updatedDate;
+	
+	
+	private String createdBy;
+	
+	
+	private String updatedBy;
+	
+	
+	private boolean deleteFlag;
+
+	public Long getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Long userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
+
+	public String getFirstName()
+	{
+		return firstName;
+	}
+
+	public void setFirstName(String firstName)
+	{
+		this.firstName = firstName;
+	}
+
+	public String getMiddleName()
+	{
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName)
+	{
+		this.middleName = middleName;
+	}
+
+	public String getLastName()
+	{
+		return lastName;
+	}
+
+	public void setLastName(String lastName)
+	{
+		this.lastName = lastName;
+	}
+
+	public String getEmailId()
+	{
+		return emailId;
+	}
+
+	public void setEmailId(String emailId)
+	{
+		this.emailId = emailId;
+	}
+
+	public String getPhoneNumber()
+	{
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber)
+	{
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getGender()
+	{
+		return gender;
+	}
+
+	public void setGender(String gender)
+	{
+		this.gender = gender;
+	}
+
+	public Date getDateOfBirth()
+	{
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth)
+	{
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getProfilePic()
+	{
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic)
+	{
+		this.profilePic = profilePic;
+	}
+
+	public Date getLastLoginDate()
+	{
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate)
+	{
+		this.lastLoginDate = lastLoginDate;
+	}
+
+	public String getUserAccountStatus()
+	{
+		return userAccountStatus;
+	}
+
+	public void setUserAccountStatus(String userAccountStatus)
+	{
+		this.userAccountStatus = userAccountStatus;
+	}
+
+	public Date getCreatedDate()
+	{
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate)
+	{
+		this.createdDate = createdDate;
+	}
+
+	public Date getUpdatedDate()
+	{
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(Date updatedDate)
+	{
+		this.updatedDate = updatedDate;
+	}
+
+	public String getCreatedBy()
+	{
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy)
+	{
+		this.createdBy = createdBy;
+	}
+
+	public String getUpdatedBy()
+	{
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy)
+	{
+		this.updatedBy = updatedBy;
+	}
+
+	public boolean isDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
+	}
+	
+	
+
+}

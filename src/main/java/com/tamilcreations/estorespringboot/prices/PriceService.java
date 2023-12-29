@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tamilcreations.estorespringboot.generic.GenericService;
 import com.tamilcreations.estorespringboot.products.Product;
@@ -24,6 +25,7 @@ public class PriceService
 	@Autowired
 	GenericService genericService;
 
+	@Transactional
 	public Price getPriceIdByPriceUuid(String priceUuid) throws Exception
 	{
 		Optional<Price> priceOptional = priceRepo.findPriceByPriceUuid(priceUuid);
@@ -37,6 +39,7 @@ public class PriceService
 		}
 	}
 
+	@Transactional
 	public PriceResponse getPriceForCurrentTime(long productId)
 	{
 		String currentDateAndTime = genericService.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
@@ -54,6 +57,7 @@ public class PriceService
 		}
 	}
 
+	@Transactional
 	public PriceResponse getPriceForCurrentTime(String productUuid) throws Exception
 	{
 		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
@@ -84,6 +88,7 @@ public class PriceService
 		}
 	}
 
+	@Transactional
 	public PriceResponse getPricesList(String productUuid) throws Exception
 	{
 		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
@@ -106,6 +111,7 @@ public class PriceService
 		}
 	}
 
+	@Transactional
 	public PriceResponse addNewPrice(Price price) throws Exception
 	{
 		String productUuid = price.getProduct().getUuid();
@@ -138,6 +144,7 @@ public class PriceService
 		}
 	}
 
+	@Transactional
 	public PriceResponse updateExistingPrice(Price price) throws Exception
 	{
 		Long productId = null;

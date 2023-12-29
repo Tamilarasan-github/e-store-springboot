@@ -1,0 +1,41 @@
+# Define the GraphQL type for User
+type User {
+  userId: ID
+  uuid: String
+  firstName: String
+  middleName: String
+  lastName: String
+  emailId: String
+  phoneNumber: String
+  gender: String
+  dateOfBirth: String
+  profilePic: String
+  lastLoginDate: String
+  userAccountStatus: String
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+}
+
+# Define the GraphQL input type for creating or updating User
+input UserInput {
+  userId: ID
+  uuid: String
+  firstName: String
+  middleName: String
+  lastName: String
+  emailId: String
+  phoneNumber: String
+  gender: String
+  dateOfBirth: String
+  profilePic: String
+  lastLoginDate: String
+  userAccountStatus: String
+  createdDate: String
+  updatedDate: String
+  createdBy: String
+  updatedBy: String
+  deleteFlag: Boolean
+}
