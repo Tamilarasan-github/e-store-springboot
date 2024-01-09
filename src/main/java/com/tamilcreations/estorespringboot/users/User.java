@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,15 @@ public class User
 	
 	@Column(name = "uuid")
 	private String uuid;	
+	
+	@Transient
+	private String jwtToken;
+	
+	@Column(name = "user_name")
+	private String userName;	
+	
+	@Column(name = "password")
+	private String password;	
 	
 	@Column(name = "first_name")
 	private String firstName;
@@ -99,6 +109,38 @@ public class User
 	public void setUuid(String uuid)
 	{
 		this.uuid = uuid;
+	}
+	
+	
+
+	public String getJwtToken()
+	{
+		return jwtToken;
+	}
+
+	public void setJwtToken(String jwtToken)
+	{
+		this.jwtToken = jwtToken;
+	}
+
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
 	}
 
 	public String getFirstName()

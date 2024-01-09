@@ -3,6 +3,7 @@ package com.tamilcreations.estorespringboot.users;
 import java.util.Date;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +14,7 @@ import jakarta.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+import com.tamilcreations.estorespringboot.generic.GenericService;
 import com.tamilcreations.estorespringboot.sellers.Seller;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +32,10 @@ public class UserInput
 	
 	
 	private String uuid;	
+	
+	private String userName;
+	
+	private String password;
 	
 	
 	private String firstName;
@@ -50,13 +56,13 @@ public class UserInput
 	private String gender;
 	
 	
-	private Date dateOfBirth;
+	private String dateOfBirth;
 	
 	
 	private String profilePic;
 	
 	
-	private Date lastLoginDate;
+	private Date lastLoginDate; 
 	
 	
 	private String userAccountStatus;
@@ -94,6 +100,28 @@ public class UserInput
 	public void setUuid(String uuid)
 	{
 		this.uuid = uuid;
+	}
+	
+	
+
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
 	}
 
 	public String getFirstName()
@@ -156,12 +184,12 @@ public class UserInput
 		this.gender = gender;
 	}
 
-	public Date getDateOfBirth()
+	public String getDateOfBirth()
 	{
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth)
+	public void setDateOfBirth(String dateOfBirth)
 	{
 		this.dateOfBirth = dateOfBirth;
 	}
@@ -246,6 +274,31 @@ public class UserInput
 		this.deleteFlag = deleteFlag;
 	}
 	
-	
+	public User toUser() {
+        User user = new User();
+        user.setUuid(this.uuid);
+        user.setUserName(this.userName);
+        user.setPassword(this.password);
+        user.setFirstName(this.firstName);
+        user.setMiddleName(this.middleName);
+        user.setLastName(this.lastName);
+        user.setEmailId(this.emailId);
+        user.setPhoneNumber(this.phoneNumber);
+        user.setGender(this.gender);
+        user.setDateOfBirth(new GenericService().convertStringToDateFormat(this.dateOfBirth));
+        user.setProfilePic(this.profilePic);
+        user.setLastLoginDate(this.lastLoginDate);
+        user.setUserAccountStatus(this.userAccountStatus);
+        user.setCreatedDate(this.createdDate);
+        user.setUpdatedDate(this.updatedDate);
+        user.setCreatedBy(this.createdBy);
+        user.setUpdatedBy(this.updatedBy);
+        user.setDeleteFlag(this.deleteFlag);
+
+        // Set other fields as needed...
+
+        return user;
+    }
+
 
 }
