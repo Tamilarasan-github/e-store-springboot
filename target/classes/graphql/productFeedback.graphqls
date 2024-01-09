@@ -1,10 +1,11 @@
 extend type Query
 {
 	getProductFeedbackRepliesCount(productFeedbackId: Int) : Int!
+	getProductFeedbacksListByProductUuid(productUuid: String) : ProductFeedbackResponse!
 }
 
 extend type Mutation{
-	getProductFeedbacksListByProductUuid(productUuid: String) : ProductFeedbackResponse!
+	
 	addNewProductFeedback(productFeedbackInput : ProductFeedbackInput) : ProductFeedbackResponse!
 }
 
@@ -17,6 +18,7 @@ type ProductFeedback {
   user: User
   productRating: Int
   reviewComment: String
+  feedbackRepliesCount : Int
   upVotes: Int
   downVotes: Int
   createdDate: String
