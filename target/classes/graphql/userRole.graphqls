@@ -1,0 +1,35 @@
+
+extend type Mutation
+{
+	addNewUserRole(userRoleInput: UserRoleInput) : UserRoleResponse
+}
+
+type UserRole {
+    uuid: String
+    userId: Int!
+    roleId: Int!
+    createdDate: String!
+    updatedDate: String
+    createdBy: String!
+    updatedBy: String
+    deleteFlag: Boolean!
+}
+
+input UserRoleInput {
+    uuid: String
+    userUuid: String!
+    roleUuid: String!
+    createdDate: String
+    updatedDate: String
+    createdBy: String
+    updatedBy: String
+    deleteFlag: Boolean
+}
+
+type UserRoleResponse
+{
+	userRole: UserRole
+	userRoles: [UserRole]
+	errorMessage: String
+	successMessage: String
+}

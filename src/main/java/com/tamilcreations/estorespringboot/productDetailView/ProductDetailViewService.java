@@ -12,8 +12,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.generic.Constants;
-import com.tamilcreations.estorespringboot.generic.CursorUtils;
+import com.tamilcreations.estorespringboot.utils.Constants;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 
 @Service
 public class ProductDetailViewService

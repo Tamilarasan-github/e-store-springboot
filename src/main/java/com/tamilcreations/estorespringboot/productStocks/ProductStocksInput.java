@@ -2,15 +2,9 @@ package com.tamilcreations.estorespringboot.productStocks;
 
 import java.util.Date;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
 import com.tamilcreations.estorespringboot.products.Product;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -236,8 +230,8 @@ public class ProductStocksInput
         productStocks.setTotalStocks(this.getTotalStocks());
         productStocks.setAvailableStocks(this.getAvailableStocks());
         productStocks.setReservedStocks(this.getReservedStocks());
-        productStocks.setStocksEffectiveDate(new GenericService().convertStringToDateFormat(this.getStocksEffectiveDate()));
-        productStocks.setStocksTermDate(new GenericService().convertStringToDateFormat(this.getStocksTermDate()));
+        productStocks.setStocksEffectiveDate(Utils.convertStringToDateFormat(this.getStocksEffectiveDate()));
+        productStocks.setStocksTermDate(Utils.convertStringToDateFormat(this.getStocksTermDate()));
         productStocks.setCreatedDate(this.createdDate);
         productStocks.setUpdatedDate(this.updatedDate);
         productStocks.setCreatedBy(this.getCreatedBy());

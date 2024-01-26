@@ -1,0 +1,34 @@
+extend type Mutation
+{
+	addNewRole(roleInput : RoleInput) : RoleResponse
+}
+
+
+# GraphQL schema type for output (query/mutation response)
+type Role {
+    roleId: Int!
+    uuid: String
+    roleName: String!
+    createdDate: String!
+    updatedDate: String
+    createdBy: String!
+    updatedBy: String
+    deleteFlag: Boolean!
+}
+
+# GraphQL schema type for input (mutation input)
+input RoleInput {
+	uuid: String
+    roleName: String
+    createdDate: String
+    createdBy: String
+    deleteFlag: Boolean
+}
+
+type RoleResponse
+{
+	role: Role
+	roles: [Role]
+	errorMessage: String
+	successMessage: String
+}

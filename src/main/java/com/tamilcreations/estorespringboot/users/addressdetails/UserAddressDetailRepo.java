@@ -12,4 +12,7 @@ public interface UserAddressDetailRepo extends JpaRepository<UserAddressDetail, 
 {
 	@Query(value="SELECT * FROM UserAddressDetails u WHERE u.user_id = :userId", nativeQuery=true)
 	List<UserAddressDetail> findByUserId(long userId);
+	
+	@Query(value="SELECT * FROM UserAddressDetails u WHERE u.uuid = :userAddressUuid", nativeQuery=true)
+	List<UserAddressDetail> findUserAddressDetailsByUserAddressUuid(String userAddressUuid);
 }

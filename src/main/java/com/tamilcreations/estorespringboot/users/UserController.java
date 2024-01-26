@@ -6,14 +6,19 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class UserController
 {
 	@Autowired
-	UserRepo userRepo;
+	private HttpServletRequest request;
 	
 	@Autowired
-	UserService userService;
+	private UserRepo userRepo;
+	
+	@Autowired
+	private UserService userService;
 	
 	@QueryMapping
 	public User getUser(@Argument long userId) throws Exception

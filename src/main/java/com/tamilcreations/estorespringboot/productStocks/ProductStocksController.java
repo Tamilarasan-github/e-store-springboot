@@ -2,31 +2,29 @@ package com.tamilcreations.estorespringboot.productStocks;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocks;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocksInput;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocksResponse;
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
+import com.tamilcreations.estorespringboot.utils.Utils;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProductStocksController
 {	
-	@Autowired
-	ProductStocksService productStocksService;
 	
-
 	@Autowired
-	GenericService genericService;
-		
+	private HttpServletRequest request;
+	
+	@Autowired
+	private ProductStocksService productStocksService;
+			
 	@QueryMapping
 	public ProductStocksResponse getProductStocksByProductIdForNow(@Argument long productId)
 	{
@@ -48,6 +46,8 @@ public class ProductStocksController
 	@MutationMapping
 	public ProductStocksResponse addNewProductStocks(@Argument ProductStocksInput productStocksInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		productStocksInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		productStocksInput.setUuid(UUID.randomUUID().toString());		
 		
@@ -59,6 +59,8 @@ public class ProductStocksController
 	@MutationMapping
 	public ProductStocksResponse updateExistingProductStocks(@Argument ProductStocksInput productStocksInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		productStocksInput.setUpdatedDate(new Timestamp(new Date().getTime()));
 		ProductStocks existingProductStocksDetails = productStocksService.getProductStocksIdByProductStocksUuid(productStocksInput.getUuid());
 		
@@ -68,7 +70,7 @@ public class ProductStocksController
 		Date existingProductStocksEffectiveDate = existingProductStocksDetails.getStocksEffectiveDate();
 		Date existingProductStocksTermDate = existingProductStocksDetails.getStocksTermDate();
 		
-		Date newProductStocksTermDate = genericService.convertStringToDateFormat(productStocksInput.getStocksTermDate());
+		Date newProductStocksTermDate = Utils.convertStringToDateFormat(productStocksInput.getStocksTermDate());
 				
 		if(existingProductStocksTermDate == null || existingProductStocksEffectiveDate.before(new Timestamp(new Date().getTime())) && existingProductStocksTermDate!=null)
 		{

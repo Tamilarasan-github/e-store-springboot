@@ -8,8 +8,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import com.tamilcreations.estorespringboot.generic.CursorUtils;
-import com.tamilcreations.estorespringboot.generic.PublicQuery;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 
 import graphql.relay.DefaultPageInfo;
 import graphql.relay.PageInfo;
@@ -21,7 +20,6 @@ public class ProductDetailViewController
 	@Autowired
 	ProductDetailViewService productDetailViewService;
 	
-	@PublicQuery
 	@QueryMapping
 	public ProductDetailViewConnection getAllActiveProductDetailsWithStocksPriceAndDiscounts( @Argument @Nullable String productName,  @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before)
 	{

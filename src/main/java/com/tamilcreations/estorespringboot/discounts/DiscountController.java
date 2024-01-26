@@ -2,31 +2,29 @@ package com.tamilcreations.estorespringboot.discounts;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
-import com.tamilcreations.estorespringboot.discounts.Discount;
-import com.tamilcreations.estorespringboot.discounts.DiscountInput;
-import com.tamilcreations.estorespringboot.discounts.DiscountResponse;
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
+import com.tamilcreations.estorespringboot.utils.Utils;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class DiscountController
 {	
-	@Autowired
-	DiscountService discountService;
 	
-
 	@Autowired
-	GenericService genericService;
-		
+	private HttpServletRequest request;
+	
+	@Autowired
+	private DiscountService discountService;
+			
 	@QueryMapping
 	public DiscountResponse getDiscountByProductIdForNow(@Argument long productId)
 	{
@@ -48,6 +46,8 @@ public class DiscountController
 	@MutationMapping
 	public DiscountResponse addNewDiscount(@Argument DiscountInput discountInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+
 		discountInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		discountInput.setUuid(UUID.randomUUID().toString());		
 		
@@ -59,6 +59,8 @@ public class DiscountController
 	@MutationMapping
 	public DiscountResponse updateExistingDiscount(@Argument DiscountInput discountInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+
 		discountInput.setUpdatedDate(new Timestamp(new Date().getTime()));
 		Discount existingDiscountDetails = discountService.getDiscountIdByDiscountUuid(discountInput.getUuid());
 		
@@ -68,7 +70,7 @@ public class DiscountController
 		Date existingDiscountEffectiveDate = existingDiscountDetails.getDiscountEffectiveDate();
 		Date existingDiscountTermDate = existingDiscountDetails.getDiscountTermDate();
 		
-		Date newDiscountTermDate = genericService.convertStringToDateFormat(discountInput.getDiscountTermDate());
+		Date newDiscountTermDate = Utils.convertStringToDateFormat(discountInput.getDiscountTermDate());
 				
 		if(existingDiscountTermDate == null || existingDiscountEffectiveDate.before(new Timestamp(new Date().getTime())) && existingDiscountTermDate!=null)
 		{

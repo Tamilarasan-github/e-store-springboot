@@ -11,7 +11,7 @@ public class ProductDetailViewConnection
 {
 	private PageInfo pageInfo;
 	private List<ProductDetailViewEdge> edges;
-	
+		
 	public ProductDetailViewConnection(PageInfo pageInfo, List<ProductDetailViewEdge> edges)
 	{
 		super();

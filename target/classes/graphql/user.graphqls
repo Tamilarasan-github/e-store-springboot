@@ -21,6 +21,7 @@ type User {
   userId: ID
   uuid: String
   jwtToken: String
+  role: String
   userName: String
   password: String
   firstName: String

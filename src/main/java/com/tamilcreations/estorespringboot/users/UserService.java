@@ -18,7 +18,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.generic.JwtToken;
+import com.tamilcreations.estorespringboot.roles.Role;
+import com.tamilcreations.estorespringboot.roles.RoleRepo;
+import com.tamilcreations.estorespringboot.roles.RoleService;
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
+import com.tamilcreations.estorespringboot.userRoles.UserRole;
+import com.tamilcreations.estorespringboot.userRoles.UserRoleService;
 
 
 @Service
@@ -27,8 +32,14 @@ public class UserService implements UserDetailsService
 	@Autowired
 	private UserRepo userRepo;
 	
+	@Autowired
+	private UserRoleService userRoleService;
+		
 	 @Autowired
 	 private PasswordEncoder passwordEncoder;
+	 
+	 @Autowired
+	private RoleService roleService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException
@@ -41,9 +52,27 @@ public class UserService implements UserDetailsService
 		else
 		{
 			User user = userOptional.get(); 
+			Long roleId = null;
+			String roleName = null;
+			try {
+				roleId = userRoleService.getRoleIdByUserId(user.getUserId());
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException("User Role mapping is NOT found for this user. "+ e);
+			}
+			
+			try
+			{
+				roleName = roleService.getRoleNameByRoleId(roleId);
+			} 
+			catch (Exception e)
+			{
+				throw new RuntimeException("Role is NOT found for this role ID. "+ e);
+			}
 			//  Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
 			List<GrantedAuthority> authorities = new ArrayList<>();
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+			authorities.add(new SimpleGrantedAuthority(roleName));
 			return new org.springframework.security.core.userdetails.User(user.getPhoneNumber(), user.getPassword(), authorities);
 
 		}
@@ -86,21 +115,31 @@ public class UserService implements UserDetailsService
 		
 	}
 	
-	public UserResponse authenticateUser(String phoneNumber, String password)
+	public UserResponse authenticateUser(String phoneNumber, String password) throws Exception
 	{
 		UserDetails userDetails = loadUserByUsername(phoneNumber);
 		
 		if(validatePassword(password, userDetails.getPassword()))
 		{
+			boolean isUserRoleMappingFound[] = { false };
+			boolean isRoleFound[] = { false };
+			
 			Optional<User> userOptional = userRepo.findUserByPhoneNumber(phoneNumber);
 			User user = userOptional.get();
 			user.setPassword("");
-			user.setJwtToken(JwtToken.generateToken(userDetails.getUsername()));
+			
+			UserRole userRole = userRoleService.getUserRoleByUserId(user.getUserId());
+			
+			Role role = roleService.getRoleByRoleId(userRole.getRoleId());
+			
+			user.setRole(role.getRoleName());
+			user.setJwtToken(JwtAuthenticationFilter.generateToken(userDetails.getUsername(), role.getRoleName(), user.getUuid()));
+			
 			return new UserResponse(user, "Login Successful");
 		}
 		else
 		{
-			return new UserResponse("Unauthorized Access");
+			throw new Exception("Unauthorized Access");
 		}		
 	}
 	
@@ -123,10 +162,20 @@ public class UserService implements UserDetailsService
 			String encodedPassword = passwordEncoder.encode(newUser.getPassword());
 			//System.out.println("encodedPassword:"+encodedPassword+" Size:"+encodedPassword.length());
 			newUser.setPassword(encodedPassword);
-			
+					
 			User savedUser = userRepo.saveAndFlush(newUser);
+			
+			UserRole userRole = new UserRole();
+			userRole.setUserId(savedUser.getUserId());
+			userRole.setRoleId(Long.valueOf(1));
+			userRole.setDeleteFlag(false);
+			userRole.setCreatedBy(phoneNumber);
+			userRole.setCreatedDate(new Date());
+			
+			UserRole savedUserRole = userRoleService.addRoleToUser(userRole);
+			
 			savedUser.setPassword(null);
-			savedUser.setJwtToken(JwtToken.generateToken(phoneNumber));
+			savedUser.setJwtToken(JwtAuthenticationFilter.generateToken(phoneNumber, "USER", savedUserRole.getUuid()));
 
 			return new UserResponse(savedUser, "User created successfully");
 		}

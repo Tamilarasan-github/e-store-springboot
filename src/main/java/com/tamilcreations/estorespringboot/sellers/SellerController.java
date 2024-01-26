@@ -12,7 +12,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import com.tamilcreations.estorespringboot.generic.CursorUtils;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 
 import graphql.relay.DefaultConnectionCursor;
 import graphql.relay.DefaultPageInfo;
