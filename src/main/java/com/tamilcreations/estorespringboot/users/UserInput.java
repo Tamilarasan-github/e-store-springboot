@@ -2,25 +2,10 @@ package com.tamilcreations.estorespringboot.users;
 
 import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-
-import org.springframework.stereotype.Component;
-
-import com.tamilcreations.estorespringboot.generic.GenericService;
-import com.tamilcreations.estorespringboot.sellers.Seller;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @NoArgsConstructor
@@ -285,7 +270,7 @@ public class UserInput
         user.setEmailId(this.emailId);
         user.setPhoneNumber(this.phoneNumber);
         user.setGender(this.gender);
-        user.setDateOfBirth(new GenericService().convertStringToDateFormat(this.dateOfBirth));
+        user.setDateOfBirth(Utils.convertStringToDateFormat(this.dateOfBirth));
         user.setProfilePic(this.profilePic);
         user.setLastLoginDate(this.lastLoginDate);
         user.setUserAccountStatus(this.userAccountStatus);

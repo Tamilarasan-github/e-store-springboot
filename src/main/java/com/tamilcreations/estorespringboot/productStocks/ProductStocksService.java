@@ -5,16 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocks;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocksRepo;
-import com.tamilcreations.estorespringboot.productStocks.ProductStocksResponse;
 import com.tamilcreations.estorespringboot.products.Product;
 import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
 
 @Service
@@ -26,8 +22,6 @@ public class ProductStocksService
 	@Autowired
 	ProductRepo productRepo;
 
-	@Autowired
-	GenericService genericService;
 
 	@Transactional
 	public ProductStocks getProductStocksIdByProductStocksUuid(String productStocksUuid) throws Exception
@@ -46,7 +40,7 @@ public class ProductStocksService
 	@Transactional
 	public ProductStocksResponse getProductStocksForCurrentTime(long productId)
 	{
-		String currentDateAndTime = genericService.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
+		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
 		Optional<ProductStocks> productStocksOptional = productStocksRepo.findProductStocksByProductId(productId, currentDateAndTime);
 
@@ -75,7 +69,7 @@ public class ProductStocksService
 			// "+productUuid);
 		}
 
-		String currentDateAndTime = genericService.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
+		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
 		Optional<ProductStocks> productStocksOptional = productStocksRepo.findProductStocksByProductId(product.getProductId(), currentDateAndTime);
 

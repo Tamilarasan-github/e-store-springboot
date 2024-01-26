@@ -40,6 +40,9 @@ public class User
 	@Transient
 	private String jwtToken;
 	
+	@Transient
+	private String role;
+	
 	@Column(name = "user_name")
 	private String userName;	
 	
@@ -121,6 +124,19 @@ public class User
 	public void setJwtToken(String jwtToken)
 	{
 		this.jwtToken = jwtToken;
+	}
+	
+	
+	
+
+	public String getRole()
+	{
+		return role;
+	}
+
+	public void setRole(String role)
+	{
+		this.role = role;
 	}
 
 	public String getUserName()

@@ -1,11 +1,15 @@
 package com.tamilcreations.estorespringboot.products.feedbacks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +92,7 @@ public class ProductFeedbackService
 		ProductFeedback savedProductFeedback = productFeedbackRepo.saveAndFlush(productFeedback);
 		List<ProductFeedback> productFeedbackList = new ArrayList<ProductFeedback>();
 		productFeedbackList.add(savedProductFeedback);
+		
 		return new ProductFeedbackResponse(productFeedbackList, "Thank you for your valuable feedback!");
 
 	}

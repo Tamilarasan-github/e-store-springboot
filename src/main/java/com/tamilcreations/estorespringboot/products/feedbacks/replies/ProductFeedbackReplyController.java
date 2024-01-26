@@ -12,20 +12,26 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
 import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProductFeedbackReplyController
 {
 	@Autowired
-	ProductFeedbackReplyRepo productFeedbackReplyReplyRepo;
+	private HttpServletRequest request;
 	
 	@Autowired
-	ProductFeedbackReplyService productFeedbackReplyService;
+	private ProductFeedbackReplyRepo productFeedbackReplyReplyRepo;
 	
 	@Autowired
-	UserService userService;
+	private ProductFeedbackReplyService productFeedbackReplyService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@QueryMapping
 	public ProductFeedbackReplyResponse getProductFeedbackReplysListByProductUuid(@Argument String productFeedbackUuid) throws Exception
@@ -36,6 +42,8 @@ public class ProductFeedbackReplyController
 	@MutationMapping
 	public ProductFeedbackReplyResponse addNewProductFeedbackReply(@Argument ProductFeedbackReplyInput productFeedbackReplyInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		productFeedbackReplyInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		productFeedbackReplyInput.setUuid(UUID.randomUUID().toString());	
 		

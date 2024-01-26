@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.generic.CursorUtils;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 
 
 @Service

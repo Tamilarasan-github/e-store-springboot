@@ -17,4 +17,17 @@ public class UserAddressDetailService
 	{
 		return userAddressDetailRepo.findByUserId(userId);
 	}
+	
+	public List<UserAddressDetail> getUserAddressDetailsByUserAddressUuid(String userAddressUuid)
+	{
+		return userAddressDetailRepo.findUserAddressDetailsByUserAddressUuid(userAddressUuid);
+	}
+	
+	public UserAddressDetailResponse addNewUserAddressDetails(UserAddressDetail UserAddressDetail)
+	{
+		
+		UserAddressDetail userAddressDetailSaved = userAddressDetailRepo.saveAndFlush(UserAddressDetail);
+		
+		return new UserAddressDetailResponse(userAddressDetailSaved, "User Address Details Saved Successfully.");
+	}
 }

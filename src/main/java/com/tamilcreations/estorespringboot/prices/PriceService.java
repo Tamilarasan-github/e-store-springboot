@@ -9,9 +9,9 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
 import com.tamilcreations.estorespringboot.products.Product;
 import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
 @Service
 public class PriceService
@@ -21,9 +21,6 @@ public class PriceService
 
 	@Autowired
 	ProductRepo productRepo;
-
-	@Autowired
-	GenericService genericService;
 
 	@Transactional
 	public Price getPriceIdByPriceUuid(String priceUuid) throws Exception
@@ -42,7 +39,7 @@ public class PriceService
 	@Transactional
 	public PriceResponse getPriceForCurrentTime(long productId)
 	{
-		String currentDateAndTime = genericService.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
+		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
 		Optional<Price> pricesOptional = priceRepo.findPriceByProductId(productId, currentDateAndTime);
 		List<Price> prices = new ArrayList<Price>();
@@ -73,7 +70,7 @@ public class PriceService
 			// "+productUuid);
 		}
 
-		String currentDateAndTime = genericService.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
+		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
 		Optional<Price> pricesOptional = priceRepo.findPriceByProductId(product.getProductId(), currentDateAndTime);
 		List<Price> prices = new ArrayList<Price>();

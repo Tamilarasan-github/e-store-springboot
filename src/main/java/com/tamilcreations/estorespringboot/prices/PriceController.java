@@ -2,27 +2,28 @@ package com.tamilcreations.estorespringboot.prices;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-import com.tamilcreations.estorespringboot.generic.GenericService;
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
+import com.tamilcreations.estorespringboot.utils.Utils;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class PriceController
 {
 	@Autowired
-	PriceService priceService;
+	private HttpServletRequest request;
 	
 	@Autowired
-	GenericService genericService;
-		
+	private PriceService priceService;
+			
 	@QueryMapping
 	public PriceResponse getPriceByProductIdForNow(@Argument long productId)
 	{
@@ -44,6 +45,8 @@ public class PriceController
 	@MutationMapping
 	public PriceResponse addNewPrice(@Argument PriceInput priceInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		priceInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		priceInput.setUuid(UUID.randomUUID().toString());		
 		
@@ -55,6 +58,8 @@ public class PriceController
 	@MutationMapping
 	public PriceResponse updateExistingPrice(@Argument PriceInput priceInput) throws Exception
 	{
+		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		priceInput.setUpdatedDate(new Timestamp(new Date().getTime()));
 		Price existingPriceDetails = priceService.getPriceIdByPriceUuid(priceInput.getUuid());
 		
@@ -64,7 +69,7 @@ public class PriceController
 		Date existingPriceEffectiveDate = existingPriceDetails.getPriceEffectiveDate();
 		Date existingPriceTermDate = existingPriceDetails.getPriceTermDate();
 		
-		Date newPriceTermDate = genericService.convertStringToDateFormat(priceInput.getPriceTermDate());
+		Date newPriceTermDate = Utils.convertStringToDateFormat(priceInput.getPriceTermDate());
 				
 		if(existingPriceTermDate == null || existingPriceEffectiveDate.before(new Timestamp(new Date().getTime())) && existingPriceTermDate!=null)
 		{

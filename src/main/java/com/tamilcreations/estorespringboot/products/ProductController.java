@@ -13,23 +13,29 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.tamilcreations.estorespringboot.generic.CursorUtils;
+import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
 import com.tamilcreations.estorespringboot.sellers.Seller;
 import com.tamilcreations.estorespringboot.sellers.SellerConnection;
 import com.tamilcreations.estorespringboot.sellers.SellerEdge;
+import com.tamilcreations.estorespringboot.users.User;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 
 import graphql.relay.DefaultPageInfo;
 import graphql.relay.PageInfo;
 import io.micrometer.common.lang.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProductController
 {
 	@Autowired
-	ProductRepo productRepo;
+	private HttpServletRequest request;
 	
 	@Autowired
-	ProductService productService;
+	private ProductRepo productRepo;
+	
+	@Autowired
+	private ProductService productService;
 	
 		
 	@QueryMapping
@@ -75,8 +81,10 @@ public class ProductController
     }
 	
 	@MutationMapping
-	public Product addNewProduct( @Argument ProductInput productInput)
+	public Product addNewProduct( @Argument ProductInput productInput) throws Exception
 	{
+		User user = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		
 		productInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		productInput.setUpdatedDate(null);
 		
