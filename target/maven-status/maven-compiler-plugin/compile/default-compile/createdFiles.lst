@@ -16,6 +16,7 @@ com\tamilcreations\estorespringboot\prices\PriceInput.class
 com\tamilcreations\estorespringboot\users\addressdetails\UserAddressDetailService.class
 com\tamilcreations\estorespringboot\discounts\DiscountResponse.class
 com\tamilcreations\estorespringboot\users\addressdetails\UserAddressDetail.class
+com\tamilcreations\estorespringboot\utils\GenericService.class
 com\tamilcreations\estorespringboot\aspect\LoggingAspect.class
 com\tamilcreations\estorespringboot\utils\CommonType.class
 com\tamilcreations\estorespringboot\productStocks\ProductStocksInput.class
@@ -29,7 +30,6 @@ com\tamilcreations\estorespringboot\sellers\SellerEdge.class
 com\tamilcreations\estorespringboot\products\categories\ProductCategoryEdge.class
 com\tamilcreations\estorespringboot\productDetailView\ProductDetailViewService.class
 com\tamilcreations\estorespringboot\utils\PageInfo.class
-com\tamilcreations\estorespringboot\security\CustomFilter.class
 com\tamilcreations\estorespringboot\productStocks\ProductStocksRepo.class
 com\tamilcreations\estorespringboot\roles\RoleRepo.class
 com\tamilcreations\estorespringboot\products\feedbacks\ProductFeedbackRepo.class
@@ -86,7 +86,6 @@ com\tamilcreations\estorespringboot\sellers\addressdetails\SellerAddressDetail.c
 com\tamilcreations\estorespringboot\userRoles\UserRole.class
 com\tamilcreations\estorespringboot\productDetailView\ProductDetailViewConnection.class
 com\tamilcreations\estorespringboot\products\categories\subcategories\ProductSubCategoryController.class
-com\tamilcreations\estorespringboot\utils\PublicQuery.class
 com\tamilcreations\estorespringboot\utils\Roles.class
 com\tamilcreations\estorespringboot\users\addressdetails\UserAddressDetailResponse.class
 com\tamilcreations\estorespringboot\products\feedbacks\replies\ProductFeedbackReplyService.class

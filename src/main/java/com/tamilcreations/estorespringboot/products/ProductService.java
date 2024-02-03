@@ -1,6 +1,7 @@
 package com.tamilcreations.estorespringboot.products;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,30 +17,32 @@ public class ProductService
 	ProductRepo productRepo;
 	
 	@Transactional
-	public List<Product> getAllProducts(String productName, int first, String after)
+	public List<Product> getAllProducts(Long sellerId, String productName, int first, String after, String before)
 	{
-		if(after==null)
-		{
-			return productRepo.getAllProducts(productName, first);
-		}
-		else
-		{
-			return productRepo.getAllProducts(productName, first, CursorUtils.decodeCursor(after));
-		}
+		return productRepo.getAllProducts(sellerId, productName, first, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));
 	}
 	
 	@Transactional
-	public List<Product> getAllActiveProducts(String productName, int first, String after)
+	public List<Product> getProductsByStatus(Long sellerId, String productName, String status, int first, String after, String before)
 	{
-		if(after==null)
+		return productRepo.getProductsByStatus(sellerId, productName, status, first, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));
+	}
+	
+	@Transactional
+	public Product findProductByProductUuid(String productUuid) 
+	{
+		Optional<Product> productOptional =  productRepo.findProductByUuid(productUuid);
+		
+		if(!productOptional.isEmpty())
 		{
-			return productRepo.getAllActiveProducts(productName, first);
+			return productOptional.get();
 		}
 		else
 		{
-			return productRepo.getAllActiveProducts(productName, first, CursorUtils.decodeCursor(after));
+			throw new RuntimeException("Product not found!");
 		}
 	}
+	
 	
 	@Transactional
 	public Product addNewProduct(Product product)

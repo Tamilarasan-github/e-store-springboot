@@ -1,11 +1,14 @@
 type Query{
-	getAllProducts(productName : String, first: Int, after: String) : ProductConnection
-	getAllActiveProducts(productName : String, first: Int, after: String) : ProductConnection
+	getAllProductsForLoggedInSeller(productName : String, first: Int, after: String) : ProductConnection
+	getProductsByStatusForLoggedInSeller(productName : String, status: String, first: Int, after: String) : ProductConnection
+	getAllProductsBySeller(sellerUuid : String, productName : String, status: String, first: Int, after: String) : ProductConnection
+	
 }
 
 type Mutation
 {
-	addNewProduct(productInput: ProductInput!) : Product!
+	addNewProductForLoggedInSeller(productInput: ProductInput!) : Product!
+	addNewProductOnBehalfOfSeller(sellerUuid: String, productInput: ProductInput!) : Product!
 }
 
 type ProductConnection {

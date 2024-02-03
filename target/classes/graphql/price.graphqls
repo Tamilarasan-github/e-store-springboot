@@ -1,12 +1,14 @@
 extend type Query{
-	getPriceByProductIdForNow(productId : Int!) : PriceResponse
-	getPriceByProductUuidForNow(productUuid : String!) : PriceResponse
-	getPricesListByProductUuid(productUuid : String) : PriceResponse
+	getPriceByProductUuidForCurrentTimeForLoggedInSeller(productUuid : String!) : PriceResponse
+	getPricesListByProductUuidForLoggedInSeller(productUuid : String!, first : Int!, after : String, before : String) : PriceConnection
+	getPricesListByProductUuid(productUuid : String!, first : Int!, after : String, before : String) : PriceConnection
 }
 
 extend type Mutation{
-	addNewPrice(priceInput : PriceInput) : PriceResponse!
-	updateExistingPrice(priceInput : PriceInput) : PriceResponse!
+	addNewPriceForLoggedInSeller(priceInput : PriceInput) : PriceResponse!
+	addNewPriceOnBehalfOfSeller(priceInput : PriceInput) : PriceResponse!
+	updateExistingPriceForLoggedInSeller(priceInput : PriceInput) : PriceResponse!
+	updateExistingPriceOnBehalfOfSeller(priceInput : PriceInput) : PriceResponse!
 }
 
 type Price
@@ -53,5 +55,15 @@ type PriceResponse
  prices : [Price]
  errorMessage : String
  successMessage : String
+}
+
+type PriceConnection {
+    edges: [PriceEdge]
+    pageInfo: PageInfo!
+}
+
+type PriceEdge {
+    node: Price
+    cursor: String!
 }
 

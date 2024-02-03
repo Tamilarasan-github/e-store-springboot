@@ -31,7 +31,7 @@ public class SellerController
 	@QueryMapping
 	public Seller getSeller(@Argument long sellerId)
 	{
-		Seller seller = sellerService.getSeller(sellerId);
+		Seller seller = sellerService.getSellerBySellerId(sellerId);
 		//new SellerEdge("",seller);
 		//Connection<Seller> = new SellerConnection();
 		return seller; 

@@ -35,13 +35,13 @@ C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estores
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\feedbacks\replies\ProductFeedbackReply.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\users\UserResponse.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\discounts\DiscountInput.java
-C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\security\CustomFilter.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\prices\PriceController.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\feedbacks\replies\ProductFeedbackReplyRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\feedbacks\replies\ProductFeedbackReplyEdge.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\sellers\SellerRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\productStocks\ProductStocksRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\feedbacks\ProductFeedbackService.java
+C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\utils\GenericService.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\productDetailView\ProductDetailViewController.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\sellers\addressdetails\SellerAddressDetail.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\sellers\addressdetails\SellerAddressDetailRepo.java
@@ -57,7 +57,6 @@ C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estores
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\users\addressdetails\UserAddressDetailRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\categories\ProductCategoryRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\products\categories\subcategories\ProductSubCategoryController.java
-C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\utils\PublicQuery.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\prices\PriceRepo.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\discounts\DiscountConnection.java
 C:\Workspace\Eclipse\e-store-springboot\src\main\java\com\tamilcreations\estorespringboot\userRoles\UserRole.java

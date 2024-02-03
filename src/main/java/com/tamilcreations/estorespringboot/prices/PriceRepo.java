@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.tamilcreations.estorespringboot.productDetailView.ProductDetailView;
 
 public interface PriceRepo extends JpaRepository<Price, Long>, JpaSpecificationExecutor<Price>
 {
@@ -17,6 +20,9 @@ public interface PriceRepo extends JpaRepository<Price, Long>, JpaSpecificationE
 	Optional<Price> findPriceByProductId(long productId, String currentDateAndTime);
 	
 	Optional<Price> findByUuid(String uuid);
+		
+	@Query(value = "SELECT * FROM Prices WHERE CASE WHEN :after IS NOT NULL THEN price_id > :after AND product_id =:productId WHEN :before IS NOT NULL THEN price_id < :before AND product_id =:productId ELSE product_id =:productId END ORDER BY price_id ASC LIMIT :limit", nativeQuery = true)
+	List<Price> findPricesByProductId(@Param("productId") Long productId, @Param("limit") int limit, @Param("after") Long after, @Param("before") Long before);
 	
 	@Query(value="SELECT * FROM Prices p WHERE p.product_id = :productId", nativeQuery=true)
 	List<Price> findPricesByProductId(Long productId);
