@@ -3,9 +3,7 @@ package com.tamilcreations.estorespringboot.prices;
 import java.util.List;
 
 import graphql.relay.PageInfo;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 public class PriceConnection
 {

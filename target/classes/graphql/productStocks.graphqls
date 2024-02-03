@@ -1,12 +1,15 @@
 extend type Query{
-	getProductStocksByProductIdForNow(productId : Int!) : ProductStocksResponse
-	getProductStocksByProductUuidForNow(productUuid : String!) : ProductStocksResponse
-	getProductStockssListByProductUuid(productUuid : String) : ProductStocksResponse
+	getProductStocksByProductUuidForCurrentTimeForLoggedInSeller(productUuid : String!) : ProductStocksResponse
+	getProductStocksByProductUuidForCurrentTime(productUuid : String!) : ProductStocksResponse
+	getProductStocksListByProductUuidForLoggedInSeller(productUuid : String) : ProductStocksResponse
+	getProductStocksListByProductUuid(productUuid : String) : ProductStocksResponse
 }
 
 extend type Mutation{
-	addNewProductStocks(productStocksInput : ProductStocksInput) : ProductStocksResponse!
-	updateExistingProductStocks(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+	addNewProductStocksForLoggedInSeller(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+	addNewProductStocksOnBehalfOfSeller(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+	updateExistingProductStocksForLoggedInSeller(productStocksInput : ProductStocksInput) : ProductStocksResponse!
+	updateExistingProductStocksOnBehalfOfSeller(productStocksInput : ProductStocksInput) : ProductStocksResponse!
 }
 
 

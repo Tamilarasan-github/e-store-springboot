@@ -2,25 +2,34 @@ package com.tamilcreations.estorespringboot.userRoles;
 
 import java.util.Date;
 
+import com.tamilcreations.estorespringboot.roles.Role;
+import com.tamilcreations.estorespringboot.users.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "UserRoles")
 public class UserRole {
 
+	@Id
+    @Column(name = "user_roles_id")
+    private Long userRolesId;
 	
     @Column(name = "uuid", length = 36)
     private String uuid;
 
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+	@JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "role_id")
-    private Long roleId;
+    @ManyToOne
+	@JoinColumn(name = "role_id")
+    private Role role;
 
     @Column(name = "created_date", nullable = false)
     private Date createdDate;
@@ -44,70 +53,96 @@ public class UserRole {
         // Default constructor
     }
 
-    // Getters and Setters
+	public Long getUserRolesId()
+	{
+		return userRolesId;
+	}
 
-    public String getUuid() {
-        return uuid;
-    }
+	public void setUserRolesId(Long userRolesId)
+	{
+		this.userRolesId = userRolesId;
+	}
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+	public String getUuid()
+	{
+		return uuid;
+	}
 
-    public Long getUserId() {
-        return userId;
-    }
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+	public User getUser()
+	{
+		return user;
+	}
 
-    public Long getRoleId() {
-        return roleId;
-    }
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
+	public Role getRole()
+	{
+		return role;
+	}
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
+	public void setRole(Role role)
+	{
+		this.role = role;
+	}
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
+	public Date getCreatedDate()
+	{
+		return createdDate;
+	}
 
-    public Date getUpdatedDate() {
-        return updatedDate;
-    }
+	public void setCreatedDate(Date createdDate)
+	{
+		this.createdDate = createdDate;
+	}
 
-    public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
-    }
+	public Date getUpdatedDate()
+	{
+		return updatedDate;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public void setUpdatedDate(Date updatedDate)
+	{
+		this.updatedDate = updatedDate;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public String getCreatedBy()
+	{
+		return createdBy;
+	}
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+	public void setCreatedBy(String createdBy)
+	{
+		this.createdBy = createdBy;
+	}
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+	public String getUpdatedBy()
+	{
+		return updatedBy;
+	}
 
-    public boolean isDeleteFlag() {
-        return deleteFlag;
-    }
+	public void setUpdatedBy(String updatedBy)
+	{
+		this.updatedBy = updatedBy;
+	}
 
-    public void setDeleteFlag(boolean deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
+	public boolean isDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
+	}
+
+   
 }
 

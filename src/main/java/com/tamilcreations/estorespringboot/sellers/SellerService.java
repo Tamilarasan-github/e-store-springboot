@@ -1,9 +1,8 @@
 package com.tamilcreations.estorespringboot.sellers;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,38 @@ public class SellerService
 	SellerRepo sellerRepo;
 		
 	@Transactional
-	public Seller getSeller(long sellerId)
+	public Seller getSellerBySellerId(long sellerId)
 	{
 		return sellerRepo.findBySellerId(sellerId);
+	}
+	
+	@Transactional
+	public Seller getSellerBySellerUuid(String sellerUuid) throws Exception
+	{
+		Optional<Seller> sellerOptional = sellerRepo.findSellerBySellerUuid(sellerUuid);
+		
+		if(!sellerOptional.isEmpty())
+		{
+			return sellerOptional.get();
+		}
+		else
+		{
+			throw new Exception("Seller is not found.");
+		}
+	}
+	
+	@Transactional
+	public Long getSellerIdBySellerUuid(String sellerUuid) throws Exception
+	{
+		Optional<Long> sellerIdOptional = sellerRepo.findSellerIdBySellerUuid(sellerUuid);
+		
+		if(!sellerIdOptional.isEmpty())
+		{
+			return sellerIdOptional.get();
+		}
+		else
+		{
+			throw new Exception("Seller is not found.");
+		}
 	}
 }

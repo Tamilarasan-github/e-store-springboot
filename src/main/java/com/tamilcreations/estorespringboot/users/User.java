@@ -78,7 +78,10 @@ public class User
 	
 	@Column(name = "user_account_status")
 	private String userAccountStatus;
-		
+	
+	@Column(name = "seller_id")
+	private Long sellerId;
+	
 	@Column(name = "created_date")
 	private Date createdDate;
 	
@@ -257,6 +260,16 @@ public class User
 	public void setUserAccountStatus(String userAccountStatus)
 	{
 		this.userAccountStatus = userAccountStatus;
+	}
+	
+	public Long getSellerId()
+	{
+		return sellerId;
+	}
+
+	public void setSellerId(Long sellerId)
+	{
+		this.sellerId = sellerId;
 	}
 
 	public Date getCreatedDate()

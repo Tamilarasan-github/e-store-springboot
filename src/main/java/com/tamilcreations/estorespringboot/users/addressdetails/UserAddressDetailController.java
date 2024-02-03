@@ -16,17 +16,18 @@ import org.springframework.stereotype.Controller;
 import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
 import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
+import com.tamilcreations.estorespringboot.utils.GenericService;
 import com.tamilcreations.estorespringboot.utils.Roles;
 import com.tamilcreations.estorespringboot.utils.Utils;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
 
 @Controller
 public class UserAddressDetailController
 {
 	
 	@Autowired
-	private HttpServletRequest request;
+	private GenericService genericService;
 		
 	@Autowired
 	private UserAddressDetailService userAddressDetailService;
@@ -34,83 +35,70 @@ public class UserAddressDetailController
 	@Autowired
 	private UserService userService;
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
+	@Secured(value ={ Roles.USER })
 	@QueryMapping
 	public List<UserAddressDetail> getUserAddressDetailsForLoggedInUserId() throws Exception
 	{
-		User loggedInUser = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
-		User user = userService.findUserByUserUuid(loggedInUser.getUuid());
+		//User loggedInUser = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		
 		return userAddressDetailService.getUserAddressDetails(user.getUserId());
 	}
 	
-	@Secured(value ={ Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
+	@Secured(value ={ Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@QueryMapping
 	public List<UserAddressDetail> getUserAddressDetailsByUserUuid(@Argument String userUuid) throws Exception
 	{
-		 // Get the Authentication object from the SecurityContextHolder
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Claims claims = genericService.getClaims();
+		
+		String loggedInUser = claims.get("phoneNumber").toString();
 
-        // Check authorities
-        if (authentication != null && authentication.isAuthenticated()) {
-            // Get authorities (roles)
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-            // Print or process authorities
-            for (GrantedAuthority authority : authorities) {
-                System.out.println("Authority: " + authority.getAuthority());
-            }
-        }
-		User loggedInUser = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
 		User user = userService.findUserByUserUuid(userUuid);
 		return userAddressDetailService.getUserAddressDetails(user.getUserId());
         
 	}
 	
-	@Secured(value ={ Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
+	
+	
+	@Secured(value ={Roles.USER })
 	@MutationMapping
-	public UserAddressDetailResponse addNewUserAddressDetails(@Argument UserAddressDetailInput userAddressDetailInput, @Argument String userUuid) throws Exception
+	public UserAddressDetailResponse addNewUserAddressDetailsForLoggedInUserId(@Argument UserAddressDetailInput userAddressDetailInput) throws Exception
 	{
-		User loggedInUser = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		
+		String loggedInUser = claims.get("phoneNumber").toString();
+		
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		
 		UserAddressDetail userAddressDetail = userAddressDetailInput.toUserAddressDetail();
-		User user = null;
-		
-		if (userUuid != null)
-		{
-			if (loggedInUser.getRole().equalsIgnoreCase("ADMIN"))
-			{
-				user = userService.findUserByUserUuid(userUuid);
-			} 
-			else
-			{
-				return new UserAddressDetailResponse("Unauthorized Access!");
-			}
-		}
-		else
-		{
-			user = userService.findUserByUserUuid(userAddressDetail.getUser().getUuid());
-		}
-		
+						
 		userAddressDetail.setUser(user);
 
-		userAddressDetail = Utils.applyNewCreationDefaultValues(userAddressDetail, loggedInUser.getPhoneNumber());
-
+		userAddressDetail = Utils.applyNewCreationDefaultValues(userAddressDetail, loggedInUser);
+		
 		return userAddressDetailService.addNewUserAddressDetails(userAddressDetail);
 
 	}
 	
-	@Secured(value ={ Roles.ADMIN, Roles.CUSTOMER_SUPPORT, Roles.USER })
+	@Secured(value ={ Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@MutationMapping
-	public UserAddressDetailResponse addNewUserAddressDetailsForLoggedInUserId(@Argument UserAddressDetailInput userAddressDetailInput) throws Exception
+	public UserAddressDetailResponse addNewUserAddressDetails(@Argument UserAddressDetailInput userAddressDetailInput, @Argument String userUuid) throws Exception
 	{
-		User loggedInUser = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
-		UserAddressDetail userAddressDetail = userAddressDetailInput.toUserAddressDetail();
-		User user = null;
+		Claims claims = genericService.getClaims();
 		
-		user = userService.findUserByUserUuid(loggedInUser.getUuid());
-				
+		String loggedInUser = claims.get("phoneNumber").toString();
+		
+		UserAddressDetail userAddressDetail = userAddressDetailInput.toUserAddressDetail();
+		
+		User user = userService.findUserByUserUuid(userAddressDetail.getUser().getUuid());
+		
 		userAddressDetail.setUser(user);
 
-		userAddressDetail = Utils.applyNewCreationDefaultValues(userAddressDetail, loggedInUser.getPhoneNumber());
+		userAddressDetail = Utils.applyNewCreationDefaultValues(userAddressDetail, loggedInUser);
 
 		return userAddressDetailService.addNewUserAddressDetails(userAddressDetail);
 

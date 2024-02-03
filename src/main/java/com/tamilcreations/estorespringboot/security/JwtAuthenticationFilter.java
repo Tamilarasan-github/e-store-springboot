@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 
@@ -22,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tamilcreations.estorespringboot.users.User;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -74,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         return null;
     }
     
-    public static String generateToken(String subject, String role, String uuid) {
+    public static String generateToken(String subject, List<String> role, String uuid) {
     	 
     	
         String token =  Jwts.builder()
@@ -116,11 +117,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     	        // Extract information from claims
     	        String phoneNumber = jsonNode.get("sub").asText();
-    	        String role = jsonNode.get("role").asText();
+    	        JsonNode rolesNode = jsonNode.get("role");
+    	        List<String> rolesList = new ArrayList<>();
+    	        if (rolesNode != null && rolesNode.isArray()) {
+    	            for (JsonNode role : rolesNode) {
+    	                rolesList.add(role.asText());
+    	            }
+
+    	            // Now, rolesList contains the list of roles
+    	            System.out.println("Roles: " + rolesList);
+    	        } else {
+    	            System.out.println("No roles found in the JSON.");
+    	        }
     	        String uuid = jsonNode.get("uuid").asText();
     	        
     	        System.out.println("phoneNumber:"+phoneNumber);
-    	        System.out.println("role:"+role);
+    	        System.out.println("role:"+rolesList);
     	        System.out.println("uuid:"+uuid);
 
     	     
@@ -130,9 +142,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     	    // String role = claims.getPayload().get("authorities").toString();
     	     
     	     List<GrantedAuthority> grandtedAuthorities = new ArrayList<>();
-    	     grandtedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+    	     
+    	     rolesList.forEach(role->{
+    	    	 grandtedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+    	     });
+    	     
+    	     
+    	     Map<String, Object> claimsMap = new HashMap<>();
+    	     claimsMap.put("phoneNumber", phoneNumber);
+    	     claimsMap.put("role", rolesList);
+    	     claimsMap.put("user-uuid", uuid);
+    	   //  claimsMap.put("seller-uuid", uuid);
+    	     
+    	     Claims claims = Jwts.claims(claimsMap);
     	    		 
-             Authentication authentication = new UsernamePasswordAuthenticationToken(phoneNumber, null, grandtedAuthorities);
+             Authentication authentication = new UsernamePasswordAuthenticationToken(claims, null, grandtedAuthorities);
              SecurityContext context = SecurityContextHolder.createEmptyContext();
              context.setAuthentication(authentication);
              
@@ -148,7 +172,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     	     User user  = new User();
     	     user.setUuid(uuid);
     	     user.setPhoneNumber(phoneNumber);
-    	     user.setRole(role);
     	     
              return user;
          } catch (SignatureException | MalformedJwtException e) {

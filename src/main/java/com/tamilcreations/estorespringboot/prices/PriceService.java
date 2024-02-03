@@ -3,15 +3,20 @@ package com.tamilcreations.estorespringboot.prices;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tamilcreations.estorespringboot.products.Product;
-import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.products.ProductService;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 import com.tamilcreations.estorespringboot.utils.Utils;
+
+import graphql.relay.DefaultPageInfo;
+import graphql.relay.PageInfo;
+import io.micrometer.common.lang.Nullable;
 
 @Service
 public class PriceService
@@ -20,10 +25,10 @@ public class PriceService
 	PriceRepo priceRepo;
 
 	@Autowired
-	ProductRepo productRepo;
+	ProductService productService;
 
 	@Transactional
-	public Price getPriceIdByPriceUuid(String priceUuid) throws Exception
+	public Price getPriceIdByPriceUuid(String priceUuid) 
 	{
 		Optional<Price> priceOptional = priceRepo.findPriceByPriceUuid(priceUuid);
 
@@ -32,7 +37,7 @@ public class PriceService
 			return priceOptional.get();
 		} else
 		{
-			throw new Exception("Price Details not found for the Price uuid.");
+			throw new RuntimeException("Price Details not found for the Price uuid.");
 		}
 	}
 
@@ -55,30 +60,18 @@ public class PriceService
 	}
 
 	@Transactional
-	public PriceResponse getPriceForCurrentTime(String productUuid) throws Exception
+	public PriceResponse getPriceForCurrentTime(String productUuid) 
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product Details not found for the uuid " + productUuid);
-			// return new PriceResponse("Product Details not found for the uuid
-			// "+productUuid);
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
 
 		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
 		Optional<Price> pricesOptional = priceRepo.findPriceByProductId(product.getProductId(), currentDateAndTime);
-		List<Price> prices = new ArrayList<Price>();
 
 		if (pricesOptional.isPresent())
 		{
-			prices.add(pricesOptional.get());
-			return new PriceResponse(prices, "Prices fetched sucessfully for current time.");
+			Price price = pricesOptional.get();
+			return new PriceResponse(price, "Prices fetched sucessfully for current time.");
 		} else
 		{
 			return new PriceResponse("No Price Details found for today and current time.");
@@ -86,42 +79,35 @@ public class PriceService
 	}
 
 	@Transactional
-	public PriceResponse getPricesList(String productUuid) throws Exception
+	public PriceConnection getPricesList(String productUuid,  int first, @Nullable String after, @Nullable String before) 
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid!");
-		}
-		List<Price> prices = priceRepo.findPricesByProductId(product.getProductId());
-
-		if (prices.size() <= 0)
-		{
-			return new PriceResponse("No Price Details found for today and current time.");
-		} else
-		{
-			return new PriceResponse(prices, "All available prices for this product fetched sucessfully.");
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productId = product.getProductId();
+		int fetch = first + 1;
+				
+		List<Price> prices = priceRepo.findPricesByProductId(
+				productId, first, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));	
+		
+		List<PriceEdge> edges = prices.stream().map(price->
+			new PriceEdge(CursorUtils.encodedCursorFor(price.getPriceId()).getValue(), price))
+        	.collect(Collectors.toList());
+		
+		 PageInfo pageInfo = new DefaultPageInfo(
+	        		CursorUtils.encodedCursorFor(prices.get(0).getPriceId()),  // startCursor
+	        		CursorUtils.encodedCursorFor(prices.get(prices.size() - 1).getPriceId()),  // endCursor
+	        		prices.size() > first,  // hasNextPage
+	                after != null  // hasPreviousPage
+	            );
+	        
+		
+		return new PriceConnection(pageInfo, edges);
 	}
 
 	@Transactional
-	public PriceResponse addNewPrice(Price price) throws Exception
+	public PriceResponse addNewPrice(Price price) 
 	{
 		String productUuid = price.getProduct().getUuid();
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid " + productUuid);
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
 
 		Long productId = product.getProductId();
 
@@ -142,23 +128,13 @@ public class PriceService
 	}
 
 	@Transactional
-	public PriceResponse updateExistingPrice(Price price) throws Exception
+	public PriceResponse updateExistingPrice(Price price) 
 	{
 		Long productId = null;
 		if (price.getProduct().getProductId() == null)
 		{
 			String productUuid = price.getProduct().getUuid();
-			Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-			Product product;
-			
-			if (productOptional.isPresent())
-			{
-				product = productOptional.get();
-				product.getProductId();
-			} else
-			{
-				throw new Exception("Product not found for the uuid " + productUuid);
-			}
+			Product product = productService.findProductByProductUuid(productUuid);
 		}
 		else
 		{

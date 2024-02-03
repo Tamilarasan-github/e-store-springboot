@@ -8,90 +8,292 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 
+import com.tamilcreations.estorespringboot.products.Product;
+import com.tamilcreations.estorespringboot.products.ProductService;
 import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
+import com.tamilcreations.estorespringboot.users.User;
+import com.tamilcreations.estorespringboot.users.UserService;
+import com.tamilcreations.estorespringboot.utils.GenericService;
+import com.tamilcreations.estorespringboot.utils.Roles;
 import com.tamilcreations.estorespringboot.utils.Utils;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
 
 @Controller
 public class ProductStocksController
 {	
-	
-	@Autowired
-	private HttpServletRequest request;
-	
+		
 	@Autowired
 	private ProductStocksService productStocksService;
-			
-	@QueryMapping
-	public ProductStocksResponse getProductStocksByProductIdForNow(@Argument long productId)
-	{
-		return productStocksService.getProductStocksForCurrentTime(productId);
-	}
 	
-	@QueryMapping
-	public ProductStocksResponse getProductStocksByProductUuidForNow(@Argument String productUuid) throws Exception
+	@Autowired
+	private GenericService genericService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private ProductService productService;
+	
+	
+@Secured(value = {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_STOCKS_READ_ACCESS, Roles.SELLER_STOCKS_WRITE_ACCESS})
+@QueryMapping
+public ProductStocksResponse getProductStocksByProductUuidForCurrentTimeForLoggedInSeller(@Argument String productUuid) throws Exception
+{
+	Claims claims = genericService.getClaims();
+	String loggedInUser = claims.get("phoneNumber").toString();
+
+	User user = userService.getUserByPhoneNumber(loggedInUser);
+	Long loggedInSellerId = user.getSellerId();
+
+	Product product = productService.findProductByProductUuid(productUuid);
+	Long productSellerId = product.getSeller().getSellerId();
+
+	if (Long.compare(loggedInSellerId, productSellerId) == 0)
 	{
 		return productStocksService.getProductStocksForCurrentTime(productUuid);
 	}
-	
+	else
+	{
+		return new ProductStocksResponse("You do not have permission to view product stocks of other Seller's Product.");
+	}
+}
+			
+	@Secured(value = {Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS})
 	@QueryMapping
-	public ProductStocksResponse getProductStocksListByProductUuid(@Argument String productUuid) throws Exception
+	public ProductStocksResponse getProductStocksByProductUuidForCurrentTime(@Argument String productUuid) throws Exception
 	{
-		return productStocksService.getProductStocksList(productUuid);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		return productStocksService.getProductStocksForCurrentTime(productUuid);
 	}
 	
-	@MutationMapping
-	public ProductStocksResponse addNewProductStocks(@Argument ProductStocksInput productStocksInput) throws Exception
-	{
-		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
-		
-		productStocksInput.setCreatedDate(new Timestamp(new Date().getTime()));
-		productStocksInput.setUuid(UUID.randomUUID().toString());		
-		
-		ProductStocks newProductStocks = productStocksInput.toProductStocks();
-		
-		return productStocksService.addNewProductStocks(newProductStocks);
-	}
 	
-	@MutationMapping
-	public ProductStocksResponse updateExistingProductStocks(@Argument ProductStocksInput productStocksInput) throws Exception
+	
+	@Secured(value = {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_STOCKS_READ_ACCESS, Roles.SELLER_STOCKS_WRITE_ACCESS})
+	@QueryMapping
+	public ProductStocksResponse getProductStocksListByProductUuidForLoggedInSeller(@Argument String productUuid) throws Exception
 	{
-		JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
-		
-		productStocksInput.setUpdatedDate(new Timestamp(new Date().getTime()));
-		ProductStocks existingProductStocksDetails = productStocksService.getProductStocksIdByProductStocksUuid(productStocksInput.getUuid());
-		
-		ProductStocks newProductStocks = productStocksInput.toProductStocks();
-		newProductStocks.setStockId(existingProductStocksDetails.getStockId());
-		
-		Date existingProductStocksEffectiveDate = existingProductStocksDetails.getStocksEffectiveDate();
-		Date existingProductStocksTermDate = existingProductStocksDetails.getStocksTermDate();
-		
-		Date newProductStocksTermDate = Utils.convertStringToDateFormat(productStocksInput.getStocksTermDate());
-				
-		if(existingProductStocksTermDate == null || existingProductStocksEffectiveDate.before(new Timestamp(new Date().getTime())) && existingProductStocksTermDate!=null)
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		if (Long.compare(loggedInSellerId, productSellerId) == 0)
 		{
-			if (newProductStocksTermDate.after(new Timestamp(new Date().getTime())))
-			{
-				existingProductStocksDetails.setStocksTermDate(newProductStocksTermDate);
-				return productStocksService.updateExistingProductStocks(existingProductStocksDetails);
-			} 
-			else
-			{
-				return new ProductStocksResponse("ProductStocks Term Date cannot be updated to past date & time.");
-			}
-		}
-		else if(existingProductStocksEffectiveDate.after(new Timestamp(new Date().getTime())))
-		{
-			return productStocksService.updateExistingProductStocks(newProductStocks);
+			return productStocksService.getProductStocksList(productUuid);
 		}
 		else
 		{
-			return new ProductStocksResponse("Only ProductStocks Term Date can be updated for existing closed term date records, please create new productStocks to change other details.");
+			return new ProductStocksResponse("You do not have permission to view product stocks of other Seller's Product.");
 		}
 		
 	}
+	
+	@Secured(value = {Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS})
+	@QueryMapping
+	public ProductStocksResponse getProductStocksListByProductUuid(@Argument String productUuid) throws Exception
+	{
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		if (Long.compare(loggedInSellerId, productSellerId) == 0)
+		{
+			return productStocksService.getProductStocksList(productUuid);
+		}
+		else
+		{
+			return new ProductStocksResponse("You do not have permission to view product stocks of other Seller's Product.");
+		}
+		
+	}
+	
+	@Secured(value = {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_STOCKS_WRITE_ACCESS})
+	@MutationMapping
+	public ProductStocksResponse addNewProductStocksForLoggedInSeller(@Argument ProductStocksInput productStocksInput) throws Exception
+	{
+		//JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		String productUuid = productStocksInput.getProduct().getUuid();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		if (Long.compare(loggedInSellerId, productSellerId) == 0)
+		{
+			productStocksInput.setCreatedDate(new Timestamp(new Date().getTime()));
+			productStocksInput.setUuid(UUID.randomUUID().toString());		
+			
+			ProductStocks newProductStocks = productStocksInput.toProductStocks();
+			
+			return productStocksService.addNewProductStocks(newProductStocks);
+		}
+		else
+		{
+			return new ProductStocksResponse("You do not have permission to add new product stocks for other Seller's Product.");
+		}
+		
+	}
+	
+	@Secured(value= {Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS})
+	@MutationMapping
+	public ProductStocksResponse addNewProductStocksOnBehalfOfSeller(@Argument ProductStocksInput productStocksInput) throws Exception
+	{
+		//JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		String productUuid = productStocksInput.getProduct().getUuid();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		
+			productStocksInput.setCreatedDate(new Timestamp(new Date().getTime()));
+			productStocksInput.setUuid(UUID.randomUUID().toString());		
+			
+			ProductStocks newProductStocks = productStocksInput.toProductStocks();
+			
+			return productStocksService.addNewProductStocks(newProductStocks);		
+	}
+	
+	@Secured(value = {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_STOCKS_WRITE_ACCESS})
+	@MutationMapping
+	public ProductStocksResponse updateExistingProductStocksForLoggedInSeller(@Argument ProductStocksInput productStocksInput) throws Exception
+	{
+		//JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		String productUuid = productStocksInput.getProduct().getUuid();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+		if (Long.compare(loggedInSellerId, productSellerId) == 0)
+		{
+			productStocksInput.setUpdatedDate(new Timestamp(new Date().getTime()));
+			ProductStocks existingProductStocksDetails = productStocksService
+					.getProductStocksIdByProductStocksUuid(productStocksInput.getUuid());
+
+			ProductStocks newProductStocks = productStocksInput.toProductStocks();
+			newProductStocks.setStockId(existingProductStocksDetails.getStockId());
+
+			Date existingProductStocksEffectiveDate = existingProductStocksDetails.getStocksEffectiveDate();
+			Date existingProductStocksTermDate = existingProductStocksDetails.getStocksTermDate();
+
+			Date newProductStocksTermDate = Utils.convertStringToDateFormat(productStocksInput.getStocksTermDate());
+
+			if (existingProductStocksTermDate == null
+					|| existingProductStocksEffectiveDate.before(new Timestamp(new Date().getTime()))
+							&& existingProductStocksTermDate != null)
+			{
+				if (newProductStocksTermDate.after(new Timestamp(new Date().getTime())))
+				{
+					existingProductStocksDetails.setStocksTermDate(newProductStocksTermDate);
+					return productStocksService.updateExistingProductStocks(existingProductStocksDetails);
+				} 
+				else
+				{
+					return new ProductStocksResponse("ProductStocks Term Date cannot be updated to past date & time.");
+				}
+			} 
+			else if (existingProductStocksEffectiveDate.after(new Timestamp(new Date().getTime())))
+			{
+				return productStocksService.updateExistingProductStocks(newProductStocks);
+			}
+			else
+			{
+				return new ProductStocksResponse("Only ProductStocks Term Date can be updated for existing closed term date records, please create new productStocks to change other details.");
+			}
+		}
+		else
+		{
+			return new ProductStocksResponse("You do not have permission to update product stocks for other Seller's Product.");
+		}
+	}
+	
+	@Secured(value= {Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS})
+	@MutationMapping
+	public ProductStocksResponse updateExistingProductStocksOnBehalfOfSeller(@Argument ProductStocksInput productStocksInput) throws Exception
+	{
+		//JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+
+		String productUuid = productStocksInput.getProduct().getUuid();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productSellerId = product.getSeller().getSellerId();
+
+			productStocksInput.setUpdatedDate(new Timestamp(new Date().getTime()));
+			ProductStocks existingProductStocksDetails = productStocksService
+					.getProductStocksIdByProductStocksUuid(productStocksInput.getUuid());
+
+			ProductStocks newProductStocks = productStocksInput.toProductStocks();
+			newProductStocks.setStockId(existingProductStocksDetails.getStockId());
+
+			Date existingProductStocksEffectiveDate = existingProductStocksDetails.getStocksEffectiveDate();
+			Date existingProductStocksTermDate = existingProductStocksDetails.getStocksTermDate();
+
+			Date newProductStocksTermDate = Utils.convertStringToDateFormat(productStocksInput.getStocksTermDate());
+
+			if (existingProductStocksTermDate == null
+					|| existingProductStocksEffectiveDate.before(new Timestamp(new Date().getTime()))
+							&& existingProductStocksTermDate != null)
+			{
+				if (newProductStocksTermDate.after(new Timestamp(new Date().getTime())))
+				{
+					existingProductStocksDetails.setStocksTermDate(newProductStocksTermDate);
+					return productStocksService.updateExistingProductStocks(existingProductStocksDetails);
+				} 
+				else
+				{
+					return new ProductStocksResponse("ProductStocks Term Date cannot be updated to past date & time.");
+				}
+			} 
+			else if (existingProductStocksEffectiveDate.after(new Timestamp(new Date().getTime())))
+			{
+				return productStocksService.updateExistingProductStocks(newProductStocks);
+			}
+			else
+			{
+				return new ProductStocksResponse("Only ProductStocks Term Date can be updated for existing closed term date records, please create new productStocks to change other details.");
+			}
+		}
+		
 }

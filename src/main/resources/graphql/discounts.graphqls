@@ -1,12 +1,15 @@
 extend type Query{
-	getDiscountByProductIdForNow(productId : Int!) : DiscountResponse
-	getDiscountByProductUuidForNow(productUuid : String!) : DiscountResponse
+	getDiscountByProductUuidForCurrentTimeForLoggedInSeller(productUuid : String!) : DiscountResponse
+	getDiscountByProductUuidForCurrentTime(productUuid : String!) : DiscountResponse
+	getDiscountsListByProductUuidForLoggedInSeller(productUuid : String) : DiscountResponse
 	getDiscountsListByProductUuid(productUuid : String) : DiscountResponse
 }
 
 extend type Mutation{
-	addNewDiscount(discountInput : DiscountInput) : DiscountResponse!
+	addNewDiscountForLoggedInSeller(discountInput : DiscountInput) : DiscountResponse!
+	addNewDiscountOnBehalfOfSeller(discountInput : DiscountInput) : DiscountResponse!
 	updateExistingDiscount(discountInput : DiscountInput) : DiscountResponse!
+	updateExistingDiscountForLoggedInSeller(discountInput : DiscountInput) : DiscountResponse!
 }
 
 type Discount

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Controller;
 
 import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
+import com.tamilcreations.estorespringboot.utils.GenericService;
 import com.tamilcreations.estorespringboot.utils.Roles;
-import com.tamilcreations.estorespringboot.utils.Utils;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
 
 
 @Controller
@@ -26,21 +26,26 @@ public class ProductFeedbackController
 	private ProductFeedbackService productFeedbackService;
 	
 	@Autowired
+	private GenericService genericService;
+	
+	@Autowired
 	private UserService userService;
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
+	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@QueryMapping
 	public ProductFeedbackResponse getProductFeedbacksListByProductUuid(@Argument String productUuid) throws Exception
 	{
 		return productFeedbackService.getProductFeedbacksList(productUuid);
 	}
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
-	//@Secured(value ={ "ROLE_USER","ADMIN", "CUSTOMER_SUPPORT" })
-	//@Secured("ROLE_USER")
+	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@MutationMapping
 	public ProductFeedbackResponse addNewProductFeedback(@Argument ProductFeedbackInput productFeedbackInput) throws Exception
 	{
+		String loggedInUserName = genericService.getAuthenticatedUserName();
+		String loggedInUserRole = genericService.getAuthenticatedRole();
+		
+		Claims claims = genericService.getClaims();
 		productFeedbackInput.setCreatedDate(new Timestamp(new Date().getTime()));
 		productFeedbackInput.setUuid(UUID.randomUUID().toString());	
 		
@@ -55,7 +60,7 @@ public class ProductFeedbackController
 		return productFeedbackService.addNewProductFeedback(newProductFeedback);
 	}
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT })
+	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@QueryMapping
 	public int getProductFeedbackRepliesCount(@Argument Long productFeedbackId)
 	{

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class PriceResponse
 {
+	private Price price;
 	private List<Price> prices;
 	private String errorMessage;
 	private String successMessage;
@@ -14,9 +15,16 @@ public class PriceResponse
 	public PriceResponse(String errorMessage)
 	{
 		super();
-		this.prices = prices;
 		this.errorMessage = errorMessage;
 	}
+	
+	public PriceResponse(Price price, String successMessage)
+	{
+		super();
+		this.price = price;
+		this.successMessage = successMessage;
+	}
+	
 	
 	public PriceResponse(List<Price> prices, String successMessage)
 	{
@@ -25,6 +33,18 @@ public class PriceResponse
 		this.successMessage = successMessage;
 	}
 	
+	
+	
+	public Price getPrice()
+	{
+		return price;
+	}
+
+	public void setPrice(Price price)
+	{
+		this.price = price;
+	}
+
 	public List<Price> getPrices()
 	{
 		return prices;
