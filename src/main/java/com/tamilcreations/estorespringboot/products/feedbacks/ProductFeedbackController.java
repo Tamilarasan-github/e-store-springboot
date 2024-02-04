@@ -15,8 +15,10 @@ import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
 import com.tamilcreations.estorespringboot.utils.GenericService;
 import com.tamilcreations.estorespringboot.utils.Roles;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.lang.Nullable;
 
 
 @Controller
@@ -31,23 +33,21 @@ public class ProductFeedbackController
 	@Autowired
 	private UserService userService;
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
+	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@QueryMapping
-	public ProductFeedbackResponse getProductFeedbacksListByProductUuid(@Argument String productUuid) throws Exception
+	public ProductFeedbackConnection getProductFeedbacksListByProductUuid(@Argument String productUuid, @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before) throws Exception
 	{
-		return productFeedbackService.getProductFeedbacksList(productUuid);
+		return productFeedbackService.getProductFeedbacksList(productUuid, first, after, before);
 	}
 	
-	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
+	@Secured(value ={ Roles.USER, Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@MutationMapping
 	public ProductFeedbackResponse addNewProductFeedback(@Argument ProductFeedbackInput productFeedbackInput) throws Exception
-	{
-		String loggedInUserName = genericService.getAuthenticatedUserName();
-		String loggedInUserRole = genericService.getAuthenticatedRole();
-		
+	{		
 		Claims claims = genericService.getClaims();
-		productFeedbackInput.setCreatedDate(new Timestamp(new Date().getTime()));
-		productFeedbackInput.setUuid(UUID.randomUUID().toString());	
+		String loggedInUser = claims.get("phoneNumber").toString();
+		
+		Utils.applyNewCreationDefaultValues(productFeedbackInput, loggedInUser);
 		
 		String userUuid = productFeedbackInput.getUser().getUuid();
 		

@@ -3,14 +3,23 @@ package com.tamilcreations.estorespringboot.productStocks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tamilcreations.estorespringboot.prices.Price;
+import com.tamilcreations.estorespringboot.prices.PriceConnection;
+import com.tamilcreations.estorespringboot.prices.PriceEdge;
 import com.tamilcreations.estorespringboot.products.Product;
-import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.products.ProductService;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 import com.tamilcreations.estorespringboot.utils.Utils;
+
+import graphql.relay.DefaultPageInfo;
+import graphql.relay.PageInfo;
+import io.micrometer.common.lang.Nullable;
 
 
 @Service
@@ -20,7 +29,7 @@ public class ProductStocksService
 	ProductStocksRepo productStocksRepo;
 
 	@Autowired
-	ProductRepo productRepo;
+	ProductService productService;
 
 
 	@Transactional
@@ -54,20 +63,9 @@ public class ProductStocksService
 	}
 
 	@Transactional
-	public ProductStocksResponse getProductStocksForCurrentTime(String productUuid) throws Exception
+	public ProductStocksResponse getProductStocksForCurrentTime(String productUuid)
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product Details not found for the uuid " + productUuid);
-			// return new ProductStocksResponse("Product Details not found for the uuid
-			// "+productUuid);
-		}
+		Product product= productService.findProductByProductUuid(productUuid);
 
 		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
@@ -83,42 +81,35 @@ public class ProductStocksService
 	}
 
 	@Transactional
-	public ProductStocksResponse getProductStocksList(String productUuid) throws Exception
+	public ProductStocksConnection getProductStocksList(String productUuid,  int first, @Nullable String after, @Nullable String before) throws Exception
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid!");
-		}
-		List<ProductStocks> productStocks = productStocksRepo.findProductStocksByProductId(product.getProductId());
-
-		if (productStocks.size() <= 0)
-		{
-			return new ProductStocksResponse("No ProductStocks Details found for today and current time.");
-		} else
-		{
-			return new ProductStocksResponse(productStocks, "All available productStocks for this product fetched sucessfully.");
-		}
+		Product product= productService.findProductByProductUuid(productUuid);
+		
+		Long productId = product.getProductId();
+		int fetch = first + 1;
+				
+		List<ProductStocks> productStocks = productStocksRepo.findProductStocksByProductId(
+				productId, fetch, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));	
+		
+		List<ProductStocksEdge> edges = productStocks.stream().map(productStock->
+			new ProductStocksEdge(CursorUtils.encodedCursorFor(productStock.getStockId()).getValue(), productStock))
+        	.collect(Collectors.toList());
+		
+		 PageInfo pageInfo = new DefaultPageInfo(
+	        		CursorUtils.encodedCursorFor(productStocks.get(0).getStockId()),  // startCursor
+	        		CursorUtils.encodedCursorFor(productStocks.get(productStocks.size() - 1).getStockId()),  // endCursor
+	        		productStocks.size() > first,  // hasNextPage
+	                after != null  // hasPreviousPage
+	            );
+		return new ProductStocksConnection(pageInfo, edges);
+		
 	}
 
 	@Transactional
-	public ProductStocksResponse addNewProductStocks(ProductStocks productStocks) throws Exception
+	public ProductStocksResponse addNewProductStocks(ProductStocks productStocks)
 	{
 		String productUuid = productStocks.getProduct().getUuid();
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid " + productUuid);
-		}
+		Product product= productService.findProductByProductUuid(productUuid);
 
 		Long productId = product.getProductId();
 
@@ -145,17 +136,8 @@ public class ProductStocksService
 		if (productStocks.getProduct().getProductId() == null)
 		{
 			String productUuid = productStocks.getProduct().getUuid();
-			Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-			Product product;
+			Product product= productService.findProductByProductUuid(productUuid);
 			
-			if (productOptional.isPresent())
-			{
-				product = productOptional.get();
-				product.getProductId();
-			} else
-			{
-				throw new Exception("Product not found for the uuid " + productUuid);
-			}
 		}
 		else
 		{

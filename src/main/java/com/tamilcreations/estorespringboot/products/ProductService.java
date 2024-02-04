@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tamilcreations.estorespringboot.utils.CursorUtils;
+import com.tamilcreations.estorespringboot.utils.Utils;
 
 
 @Service
@@ -48,5 +49,28 @@ public class ProductService
 	public Product addNewProduct(Product product)
 	{
 		return productRepo.save(product);
+	}
+	
+	@Transactional
+	public Product updateProduct(Product updatedProduct)
+	{
+		Optional<Product> existingProductOptional = productRepo.findProductByUuid(updatedProduct.getUuid());
+		if(!existingProductOptional.isEmpty())
+		{
+			Product existingProduct = existingProductOptional.get();
+			updatedProduct.setProductId(existingProduct.getProductId());
+			return productRepo.save(updatedProduct);
+		}
+		else
+		{
+			throw new RuntimeException("Product not found to update.");
+		}
+		
+	}
+	
+	@Transactional
+	public void deleteProduct(Long productId)
+	{
+		productRepo.deleteById(productId);
 	}
 }

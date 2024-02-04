@@ -1,20 +1,24 @@
 package com.tamilcreations.estorespringboot.products.feedbacks;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tamilcreations.estorespringboot.productStocks.ProductStocks;
+import com.tamilcreations.estorespringboot.productStocks.ProductStocksConnection;
+import com.tamilcreations.estorespringboot.productStocks.ProductStocksEdge;
 import com.tamilcreations.estorespringboot.products.Product;
-import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.products.ProductService;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
+
+import graphql.relay.DefaultPageInfo;
+import graphql.relay.PageInfo;
+import io.micrometer.common.lang.Nullable;
 
 @Service
 public class ProductFeedbackService
@@ -23,7 +27,7 @@ public class ProductFeedbackService
 	ProductFeedbackRepo productFeedbackRepo;
 	
 	@Autowired
-	ProductRepo productRepo;
+	ProductService productService;
 	
 	@Transactional
 	public int getProductFeedbackRepliesCount(Long productFeedbackId)
@@ -32,59 +36,37 @@ public class ProductFeedbackService
 	}
 
 	@Transactional
-	public ProductFeedbackResponse getProductFeedbacksList(String productUuid) throws Exception
+	public ProductFeedbackConnection getProductFeedbacksList(String productUuid,  int first, @Nullable String after, @Nullable String before) throws Exception
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid!");
-		}
-		List<ProductFeedback> productFeedbacks = productFeedbackRepo
-				.findProductFeedbacksByProductId(product.getProductId());
-
-		if (productFeedbacks.size() <= 0)
-		{
-			return new ProductFeedbackResponse("No feedbacks are available for this product.");
-		} 
-		else
-		{
-			List<ProductFeedback> productFeedbackListWithRepliesCount = new ArrayList<ProductFeedback>();
+					
+			Product product= productService.findProductByProductUuid(productUuid);
 			
-			for (ProductFeedback productFeedback : productFeedbacks)
-			{
-				Long productFeedbackId = productFeedback.getProductFeedbackId();
-				
-				int repliesCount = getProductFeedbackRepliesCount(productFeedbackId);
-				
-				productFeedback.setFeedbackRepliesCount(repliesCount);
-				
-				productFeedbackListWithRepliesCount.add(productFeedback) ;
-				
-			}
-			return new ProductFeedbackResponse(productFeedbackListWithRepliesCount,
-					"All available productFeedbacks for this product is fetched sucessfully.");
-		}
+			Long productId = product.getProductId();
+			int fetch = first + 1;
+					
+			List<ProductFeedback> productFeedbacks = productFeedbackRepo
+					.findProductFeedbacksByProductId(
+					productId, fetch, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));	
+			
+			List<ProductFeedbackEdge> edges = productFeedbacks.stream().map(productStock->
+				new ProductFeedbackEdge(CursorUtils.encodedCursorFor(productStock.getProductFeedbackId()).getValue(), productStock))
+	        	.collect(Collectors.toList());
+			
+			 PageInfo pageInfo = new DefaultPageInfo(
+		        		CursorUtils.encodedCursorFor(productFeedbacks.get(0).getProductFeedbackId()),  // startCursor
+		        		CursorUtils.encodedCursorFor(productFeedbacks.get(productFeedbacks.size() - 1).getProductFeedbackId()),  // endCursor
+		        		productFeedbacks.size() > first,  // hasNextPage
+		                after != null  // hasPreviousPage
+		            );
+			return new ProductFeedbackConnection(pageInfo, edges);
+		
 	}
 
 	@Transactional
 	public ProductFeedbackResponse addNewProductFeedback(ProductFeedback productFeedback) throws Exception
 	{
 		String productUuid = productFeedback.getProduct().getUuid();
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} 
-		else
-		{
-			throw new Exception("Product not found for the uuid " + productUuid);
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
 
 		Long productId = product.getProductId();
 

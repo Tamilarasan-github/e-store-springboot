@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface SellerAddressDetailRepo extends JpaRepository<SellerAddressDetail, Long>, JpaSpecificationExecutor<SellerAddressDetail>
 {
-	@Query(value="SELECT * FROM SellerAddressDetails s WHERE s.seller_id = :sellerId", nativeQuery=true)
+	@Query(value="SELECT * FROM SellerAddressDetails s WHERE s.seller_id = :sellerId AND s.delete_flag =0 ", nativeQuery=true)
 	List<SellerAddressDetail> findBySellerId(long sellerId);
 }

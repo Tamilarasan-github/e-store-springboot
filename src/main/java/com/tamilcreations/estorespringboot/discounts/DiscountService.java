@@ -3,18 +3,23 @@ package com.tamilcreations.estorespringboot.discounts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tamilcreations.estorespringboot.discounts.Discount;
-import com.tamilcreations.estorespringboot.discounts.DiscountRepo;
-import com.tamilcreations.estorespringboot.discounts.DiscountResponse;
+import com.tamilcreations.estorespringboot.prices.Price;
+import com.tamilcreations.estorespringboot.prices.PriceConnection;
+import com.tamilcreations.estorespringboot.prices.PriceEdge;
 import com.tamilcreations.estorespringboot.products.Product;
-import com.tamilcreations.estorespringboot.products.ProductRepo;
+import com.tamilcreations.estorespringboot.products.ProductService;
+import com.tamilcreations.estorespringboot.utils.CursorUtils;
 import com.tamilcreations.estorespringboot.utils.Utils;
+
+import graphql.relay.DefaultPageInfo;
+import graphql.relay.PageInfo;
+import io.micrometer.common.lang.Nullable;
 
 
 @Service
@@ -24,7 +29,7 @@ public class DiscountService
 	DiscountRepo discountRepo;
 
 	@Autowired
-	ProductRepo productRepo;
+	ProductService productService;
 
 	@Transactional
 	public Discount getDiscountIdByDiscountUuid(String discountUuid) throws Exception
@@ -56,20 +61,9 @@ public class DiscountService
 		}
 	}
 
-	public DiscountResponse getDiscountForCurrentTime(String productUuid) throws Exception
+	public DiscountResponse getDiscountForCurrentTime(String productUuid)
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product Details not found for the uuid " + productUuid);
-			// return new DiscountResponse("Product Details not found for the uuid
-			// "+productUuid);
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
 
 		String currentDateAndTime = Utils.getCurrentDateAndTime("yyyy-MM-dd HH:mm:ss");
 
@@ -85,42 +79,36 @@ public class DiscountService
 	}
 
 	@Transactional
-	public DiscountResponse getDiscountsList(String productUuid) throws Exception
+	public DiscountConnection getDiscountsList(String productUuid,  int first, @Nullable String after, @Nullable String before) throws Exception
 	{
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid!");
-		}
-		List<Discount> discounts = discountRepo.findDiscountsByProductId(product.getProductId());
-
-		if (discounts.size() <= 0)
-		{
-			return new DiscountResponse("No Discount Details found for today and current time.");
-		} else
-		{
-			return new DiscountResponse(discounts, "All available discounts for this product fetched sucessfully.");
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
+		Long productId = product.getProductId();
+		int fetch = first + 1;
+				
+		List<Discount> discounts = discountRepo.findDiscountsByProductId(
+				productId, first, CursorUtils.decodeCursor(after), CursorUtils.decodeCursor(before));	
+		
+		List<DiscountEdge> edges = discounts.stream().map(discount->
+			new DiscountEdge(CursorUtils.encodedCursorFor(discount.getDiscountId()).getValue(), discount))
+        	.collect(Collectors.toList());
+		
+		 PageInfo pageInfo = new DefaultPageInfo(
+	        		CursorUtils.encodedCursorFor(discounts.get(0).getDiscountId()),  // startCursor
+	        		CursorUtils.encodedCursorFor(discounts.get(discounts.size() - 1).getDiscountId()),  // endCursor
+	        		discounts.size() > first,  // hasNextPage
+	                after != null  // hasPreviousPage
+	            );
+	        
+		
+		return new DiscountConnection(pageInfo, edges);
+		
 	}
 
 	@Transactional
 	public DiscountResponse addNewDiscount(Discount discount) throws Exception
 	{
 		String productUuid = discount.getProduct().getUuid();
-		Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-
-		Product product;
-		if (productOptional.isPresent())
-		{
-			product = productOptional.get();
-		} else
-		{
-			throw new Exception("Product not found for the uuid " + productUuid);
-		}
+		Product product = productService.findProductByProductUuid(productUuid);
 
 		Long productId = product.getProductId();
 
@@ -147,17 +135,7 @@ public class DiscountService
 		if (discount.getProduct().getProductId() == null)
 		{
 			String productUuid = discount.getProduct().getUuid();
-			Optional<Product> productOptional = productRepo.findProductByUuid(productUuid);
-			Product product;
-			
-			if (productOptional.isPresent())
-			{
-				product = productOptional.get();
-				product.getProductId();
-			} else
-			{
-				throw new Exception("Product not found for the uuid " + productUuid);
-			}
+			Product product = productService.findProductByProductUuid(productUuid);
 		}
 		else
 		{
