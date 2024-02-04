@@ -171,4 +171,102 @@ public class ProductController
 		return productService.addNewProduct(newProduct);
 	}
 	
+	@Secured(value= {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_PRODUCT_WRITE_ACCESS })
+	@MutationMapping
+	public Product softDeleteProductOfLoggedInSeller(@Argument String productUuid) 
+	{
+		//User user = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		
+		Long sellerIdInTheRequest = product.getSeller().getSellerId();
+		
+		if(loggedInSellerId.compareTo(sellerIdInTheRequest) == 0)
+		{
+			Product updateProduct = Utils.applySoftDelete(product, loggedInUser);
+		
+			return productService.updateProduct(updateProduct);
+		}
+		else
+		{
+			throw new RuntimeException("You do not have permission to add new Products for other sellers.");
+		}
+	}
+	
+	@Secured(value= {Roles.CUSTOMER_SUPPORT_WRITE_ACCESS, Roles.ADMIN, Roles.SUPER_ADMIN})
+	@MutationMapping
+	public Product softDeleteProductOnBehalfOfSeller(@Argument String productUuid) 
+	{
+		//User user = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+		
+		Long sellerIdInTheRequest = product.getSeller().getSellerId();
+		
+		Product updateProduct = Utils.applySoftDelete(product, loggedInUser);
+		
+		return productService.updateProduct(updateProduct);
+	}
+	
+	@Secured(value= {Roles.CUSTOMER_SUPPORT_WRITE_ACCESS, Roles.ADMIN, Roles.SUPER_ADMIN})
+	@MutationMapping
+	public String hardDeleteProductOnBehalfOfSeller(@Argument String productUuid) 
+	{
+		//User user = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+		
+		Product product = productService.findProductByProductUuid(productUuid);
+					
+		try {
+		productService.deleteProduct(product.getProductId());
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException("Failed to delete the Product");
+		}
+		
+		return "Deleted successfully.";
+	}
+	
+	@Secured(value= {Roles.CUSTOMER_SUPPORT_WRITE_ACCESS, Roles.ADMIN, Roles.SUPER_ADMIN})
+	@MutationMapping
+	public String hardDeleteProductsOnBehalfOfSeller(@Argument List<String> productUuidList) 
+	{
+		//User user = JwtAuthenticationFilter.getAuthorizationHeaderValueAndValidate(request);
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+
+		User user = userService.getUserByPhoneNumber(loggedInUser);
+		Long loggedInSellerId = user.getSellerId();
+		
+		productUuidList.forEach(productUuid->{
+			Product product = productService.findProductByProductUuid(productUuid);
+			
+			try {
+			productService.deleteProduct(product.getProductId());
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException("Failed to delete the Product");
+			}
+		});
+		
+		
+		return "Deleted successfully.";
+	}
+	
 }

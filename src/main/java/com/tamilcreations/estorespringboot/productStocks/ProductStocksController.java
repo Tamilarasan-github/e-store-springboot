@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 
 import com.tamilcreations.estorespringboot.products.Product;
 import com.tamilcreations.estorespringboot.products.ProductService;
-import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
 import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
 import com.tamilcreations.estorespringboot.utils.GenericService;
@@ -21,6 +20,7 @@ import com.tamilcreations.estorespringboot.utils.Roles;
 import com.tamilcreations.estorespringboot.utils.Utils;
 
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.lang.Nullable;
 
 @Controller
 public class ProductStocksController
@@ -82,7 +82,7 @@ public ProductStocksResponse getProductStocksByProductUuidForCurrentTimeForLogge
 	
 	@Secured(value = {Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_STOCKS_READ_ACCESS, Roles.SELLER_STOCKS_WRITE_ACCESS})
 	@QueryMapping
-	public ProductStocksResponse getProductStocksListByProductUuidForLoggedInSeller(@Argument String productUuid) throws Exception
+	public ProductStocksConnection getProductStocksListByProductUuidForLoggedInSeller(@Argument String productUuid, @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before) throws Exception
 	{
 		Claims claims = genericService.getClaims();
 		String loggedInUser = claims.get("phoneNumber").toString();
@@ -95,18 +95,18 @@ public ProductStocksResponse getProductStocksByProductUuidForCurrentTimeForLogge
 
 		if (Long.compare(loggedInSellerId, productSellerId) == 0)
 		{
-			return productStocksService.getProductStocksList(productUuid);
+			return productStocksService.getProductStocksList(productUuid, first, after, before);
 		}
 		else
 		{
-			return new ProductStocksResponse("You do not have permission to view product stocks of other Seller's Product.");
+			throw new RuntimeException("You do not have permission to view product stocks of other Seller's Product.");
 		}
 		
 	}
 	
 	@Secured(value = {Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS})
 	@QueryMapping
-	public ProductStocksResponse getProductStocksListByProductUuid(@Argument String productUuid) throws Exception
+	public ProductStocksConnection getProductStocksListByProductUuid(@Argument String productUuid, @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before) throws Exception
 	{
 		Claims claims = genericService.getClaims();
 		String loggedInUser = claims.get("phoneNumber").toString();
@@ -119,11 +119,12 @@ public ProductStocksResponse getProductStocksByProductUuidForCurrentTimeForLogge
 
 		if (Long.compare(loggedInSellerId, productSellerId) == 0)
 		{
-			return productStocksService.getProductStocksList(productUuid);
+			return productStocksService.getProductStocksList(productUuid, first, after, before);
+			
 		}
 		else
 		{
-			return new ProductStocksResponse("You do not have permission to view product stocks of other Seller's Product.");
+			throw new RuntimeException("You do not have permission to view product stocks of other Seller's Product.");
 		}
 		
 	}

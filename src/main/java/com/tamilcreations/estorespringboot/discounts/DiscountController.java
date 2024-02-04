@@ -19,6 +19,7 @@ import com.tamilcreations.estorespringboot.utils.Roles;
 import com.tamilcreations.estorespringboot.utils.Utils;
 
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.lang.Nullable;
 
 @Controller
 public class DiscountController
@@ -78,7 +79,7 @@ public class DiscountController
 	
 	@Secured(value ={ Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_DISCOUNT_READ_ACCESS, Roles.SELLER_DISCOUNT_WRITE_ACCESS })
 	@QueryMapping
-	public DiscountResponse getDiscountsListByProductUuidForLoggedInSeller(@Argument String productUuid) throws Exception
+	public DiscountConnection getDiscountsListByProductUuidForLoggedInSeller(@Argument String productUuid, @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before) throws Exception
 	{
 		Claims claims = genericService.getClaims();
 		String loggedInUser = claims.get("phoneNumber").toString();
@@ -91,18 +92,18 @@ public class DiscountController
 
 		if (Long.compare(loggedInSellerId, productSellerId) == 0)
 		{
-			return discountService.getDiscountsList(productUuid);
+			return discountService.getDiscountsList(productUuid, first, after, before);
 		}
 		else
 		{
-			return new DiscountResponse("You do not have permission to view Discounts of other Seller's Product.");
+			throw new RuntimeException("You do not have permission to view Discounts of other Seller's Product.");
 		}
 		
 	}
 	
 	@Secured(value ={ Roles.ADMIN, Roles.SUPER_ADMIN, Roles.CUSTOMER_SUPPORT_READ_ACCESS, Roles.CUSTOMER_SUPPORT_WRITE_ACCESS })
 	@QueryMapping
-	public DiscountResponse getDiscountsListByProductUuid(@Argument String productUuid) throws Exception
+	public DiscountConnection getDiscountsListByProductUuid(@Argument String productUuid, @Argument @Nullable int first, @Argument @Nullable String after, @Argument @Nullable String before) throws Exception
 	{
 		Claims claims = genericService.getClaims();
 		String loggedInUser = claims.get("phoneNumber").toString();
@@ -113,7 +114,7 @@ public class DiscountController
 		Product product = productService.findProductByProductUuid(productUuid);
 		Long productSellerId = product.getSeller().getSellerId();
 
-		return discountService.getDiscountsList(productUuid);
+		return discountService.getDiscountsList(productUuid, first, after, before);
 		
 	}
 	
