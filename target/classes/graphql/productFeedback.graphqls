@@ -1,7 +1,7 @@
 extend type Query
 {
 	getProductFeedbackRepliesCount(productFeedbackId: Int) : Int!
-	getProductFeedbacksListByProductUuid(productUuid: String) : ProductFeedbackResponse!
+	getProductFeedbacksListByProductUuid(productUuid : String!, first : Int!, after : String, before : String) : ProductFeedbackConnection
 }
 
 extend type Mutation{
@@ -51,4 +51,14 @@ type ProductFeedbackResponse
  productFeedbacks : [ProductFeedback]
  errorMessage : String
  successMessage : String
+}
+
+type ProductFeedbackConnection {
+    edges: [ProductFeedbackEdge]
+    pageInfo: PageInfo!
+}
+
+type ProductFeedbackEdge {
+    node: ProductFeedback
+    cursor: String!
 }
