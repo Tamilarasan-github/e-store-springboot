@@ -1,8 +1,8 @@
 extend type Query{
 	getDiscountByProductUuidForCurrentTimeForLoggedInSeller(productUuid : String!) : DiscountResponse
 	getDiscountByProductUuidForCurrentTime(productUuid : String!) : DiscountResponse
-	getDiscountsListByProductUuidForLoggedInSeller(productUuid : String) : DiscountResponse
-	getDiscountsListByProductUuid(productUuid : String) : DiscountResponse
+	getDiscountsListByProductUuidForLoggedInSeller(productUuid : String!, first : Int!, after : String, before : String) : DiscountConnection
+	getDiscountsListByProductUuid(productUuid : String!, first : Int!, after : String, before : String) : DiscountConnection
 }
 
 extend type Mutation{
@@ -54,4 +54,14 @@ type DiscountResponse
  discounts : [Discount]
  errorMessage : String
  successMessage : String
+}
+
+type DiscountConnection {
+    edges: [DiscountEdge]
+    pageInfo: PageInfo!
+}
+
+type DiscountEdge {
+    node: Discount
+    cursor: String!
 }

@@ -33,8 +33,14 @@ public class DiscountController
 	@Autowired
 	private DiscountService discountService;
 	
-	@Autowired
+	
 	private UserService userService;
+	
+	@Autowired
+	public DiscountController(UserService userService)
+	{
+		this.userService=userService;
+	}
 			
 			
 	@Secured(value ={ Roles.SELLER_ALL_MODULES_FULL_ACCESS, Roles.SELLER_DISCOUNT_READ_ACCESS, Roles.SELLER_DISCOUNT_WRITE_ACCESS })

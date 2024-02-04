@@ -24,10 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tamilcreations.estorespringboot.roles.Role;
 import com.tamilcreations.estorespringboot.roles.RoleService;
 import com.tamilcreations.estorespringboot.security.JwtAuthenticationFilter;
-import com.tamilcreations.estorespringboot.sellers.SellerService;
 import com.tamilcreations.estorespringboot.userRoles.UserRole;
+import com.tamilcreations.estorespringboot.userRoles.UserRoleInput;
+import com.tamilcreations.estorespringboot.userRoles.UserRoleRepo;
 import com.tamilcreations.estorespringboot.userRoles.UserRoleService;
+import com.tamilcreations.estorespringboot.utils.GenericService;
 import com.tamilcreations.estorespringboot.utils.Utils;
+
+import io.jsonwebtoken.Claims;
 
 
 @Service
@@ -35,8 +39,11 @@ public class UserService implements UserDetailsService
 {
 	@Autowired
 	private UserRepo userRepo;
-		
+	
 	@Autowired
+	private UserRoleRepo userRoleRepo;
+	
+		
 	private UserRoleService userRoleService;
 		
 	 @Autowired
@@ -44,6 +51,15 @@ public class UserService implements UserDetailsService
 	 
 	 @Autowired
 	private RoleService roleService;
+	 
+	 @Autowired
+	 private GenericService genericService;
+	 
+	 @Autowired
+	 public UserService(UserRoleService userRoleService)
+	 {
+		 this.userRoleService = userRoleService;
+	 }
 	
 	@Override
 	public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException
@@ -220,5 +236,31 @@ public class UserService implements UserDetailsService
 		
 	}
 
+	@Transactional
+	public List<UserRole> addRolesToUser(List<UserRoleInput> userRolesInput)
+	{	
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
+	
+		List<UserRole> savedUserRoles = new ArrayList<UserRole>();
+		userRolesInput.forEach(userRoleInput->{
+			UserRole userRole = userRoleInput.toUserRole();
+			try
+			{
+				Role roleToMap = roleService.getRoleByRoleUuid(userRoleInput.getRoleUuid());
+				User userToMap = userRepo.findUserByUserUuid(userRoleInput.getUserUuid()).get();
+				userRole = Utils.applyNewCreationDefaultValues(userRole, loggedInUser);
+				userRole.setUser(userToMap);
+				userRole.setRole(roleToMap);
+			} 
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			savedUserRoles.add(userRoleRepo.saveAndFlush(userRole));
+		});
+		return savedUserRoles;
+	}
 	
 }
