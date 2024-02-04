@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService
 	private UserRoleRepo userRoleRepo;
 	
 		
-	private UserRoleService userRoleService;
+	//private UserRoleService userRoleService;
 		
 	 @Autowired
 	 private PasswordEncoder passwordEncoder;
@@ -55,11 +55,11 @@ public class UserService implements UserDetailsService
 	 @Autowired
 	 private GenericService genericService;
 	 
-	 @Autowired
-	 public UserService(UserRoleService userRoleService)
-	 {
-		 this.userRoleService = userRoleService;
-	 }
+//	 @Autowired
+//	 public UserService(UserRoleService userRoleService)
+//	 {
+//		 this.userRoleService = userRoleService;
+//	 }
 	
 	@Override
 	public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException
@@ -74,9 +74,7 @@ public class UserService implements UserDetailsService
 			User user = userOptional.get(); 
 			Long roleId = null;
 			String roleName = null;
-			
-			roleId = userRoleService.getRoleIdByUserId(user.getUserId());
-						
+								
 		
 			roleName = roleService.getRoleNameByRoleId(roleId);
 			
@@ -141,100 +139,7 @@ public class UserService implements UserDetailsService
 		
 	}
 	
-	public UserResponse authenticateUser(String phoneNumber, String password)
-	{
-		UserDetails userDetails = loadUserByUsername(phoneNumber);
-		
-		Map<String, String> claims = new HashMap<String, String>();
-		
-		if(validatePassword(password, userDetails.getPassword()))
-		{
-			boolean isUserRoleMappingFound[] = { false };
-			boolean isRoleFound[] = { false };
-			String userUuid = null;
-			String sellerUuid = null;
-			String roleName = null;
-			
-			Optional<User> userOptional = userRepo.findUserByPhoneNumber(phoneNumber);
-			User user = userOptional.get();
-			user.setPassword("");
-			
-			userUuid = user.getUuid();
-			
-			List<UserRole> userRolesList = userRoleService.getUserRoleByUserId(user.getUserId());
-			
-			List<String> accessList = userRolesList.stream()
-				    .map(userRole -> userRole.getRole().getRoleName())
-				    .collect(Collectors.toList());
-
-						
-			claims.put("phoneNumber", phoneNumber);
-			claims.put("role", roleName);
-			claims.put("user-uuid", userUuid);
-			
-			user.setRole(roleName);
-			
-			user.setJwtToken(JwtAuthenticationFilter.generateToken(userDetails.getUsername(), accessList, user.getUuid()));
-			
-			return new UserResponse(user, "Login Successful");
-		}
-		else
-		{
-			throw new RuntimeException("Unauthorized Access");
-		}		
-	}
 	
-	public UserResponse registerNewUser(UserInput userInput)
-	{
-		String phoneNumber = userInput.getPhoneNumber();
-		Optional<User> userOptional = userRepo.findUserByPhoneNumber(phoneNumber);
-		
-		if (!userOptional.isPresent())
-		{
-			userInput.setUserId(null);
-			userInput.setUuid(UUID.randomUUID().toString());
-			userInput.setLastLoginDate(null);
-			userInput.setUserAccountStatus("ACTIVE");
-			userInput.setDeleteFlag(false);
-			userInput.setCreatedBy(phoneNumber);
-			userInput.setCreatedDate(new Date());
-
-			User newUser = userInput.toUser();
-			String encodedPassword = passwordEncoder.encode(newUser.getPassword());
-			//System.out.println("encodedPassword:"+encodedPassword+" Size:"+encodedPassword.length());
-			newUser.setPassword(encodedPassword);
-					
-			User savedUser = userRepo.saveAndFlush(newUser);
-			
-			Role role = new Role();
-			role.setRoleId(Long.valueOf(1));
-			
-			UserRole userRole = new UserRole();
-			userRole.setUser(savedUser);
-			userRole.setRole(role);
-			userRole.setDeleteFlag(false);
-			userRole.setCreatedBy(phoneNumber);
-			userRole.setCreatedDate(new Date());
-			
-			UserRole savedUserRole = userRoleService.addRoleToUser(userRole);
-			
-			List<UserRole> userRolesList = userRoleService.getUserRoleByUserId(savedUser.getUserId());
-			
-			List<String> accessList = userRolesList.stream()
-				    .map(userRolee -> userRolee.getRole().getRoleName())
-				    .collect(Collectors.toList());
-			
-			savedUser.setPassword(null);
-			savedUser.setJwtToken(JwtAuthenticationFilter.generateToken(phoneNumber, accessList, savedUserRole.getUuid()));
-
-			return new UserResponse(savedUser, "User created successfully");
-		}
-		else
-		{
-			return new UserResponse("Entered phone number is already registered. Please login with existing phone number or enter new phone number to register new user.");
-		}
-		
-	}
 
 	@Transactional
 	public List<UserRole> addRolesToUser(List<UserRoleInput> userRolesInput)

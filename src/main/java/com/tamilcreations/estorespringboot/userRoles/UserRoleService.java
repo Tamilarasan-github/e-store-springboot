@@ -30,13 +30,13 @@ public class UserRoleService
 	private RoleService roleService;
 	
 	
-	//private UserService userService;
+	private UserService userService;
 	
-//	@Autowired
-//	public UserRoleService(UserService userService)
-//	{
-//		this.userService = userService;
-//	}
+	@Autowired
+	public UserRoleService(UserService userService)
+	{
+		this.userService = userService;
+	}
 
 	
 	public List<UserRole> getUserRoleByUserId(Long userId)
@@ -65,5 +65,30 @@ public class UserRoleService
 		return userRoleRepo.saveAndFlush(userRole);
 	}
 	
+	@Transactional
+	public List<UserRole> addRolesToUser(List<UserRoleInput> userRolesInput)
+	{	
+		Claims claims = genericService.getClaims();
+		String loggedInUser = claims.get("phoneNumber").toString();
 	
+		List<UserRole> savedUserRoles = new ArrayList<UserRole>();
+		userRolesInput.forEach(userRoleInput->{
+			UserRole userRole = userRoleInput.toUserRole();
+			try
+			{
+				Role roleToMap = roleService.getRoleByRoleUuid(userRoleInput.getRoleUuid());
+				User userToMap = userService.findUserByUserUuid(userRoleInput.getUserUuid());
+				userRole = Utils.applyNewCreationDefaultValues(userRole, loggedInUser);
+				userRole.setUser(userToMap);
+				userRole.setRole(roleToMap);
+			} 
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			savedUserRoles.add(userRoleRepo.saveAndFlush(userRole));
+		});
+		return savedUserRoles;
+	}
 }
