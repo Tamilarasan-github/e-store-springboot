@@ -9,11 +9,13 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.tamilcreations.estorespringboot.sellers.Seller;
 import com.tamilcreations.estorespringboot.sellers.SellerService;
 import com.tamilcreations.estorespringboot.users.User;
 import com.tamilcreations.estorespringboot.users.UserService;
+import com.tamilcreations.estorespringboot.utils.AmazonS3Service;
 import com.tamilcreations.estorespringboot.utils.CursorUtils;
 import com.tamilcreations.estorespringboot.utils.GenericService;
 import com.tamilcreations.estorespringboot.utils.Roles;
@@ -136,7 +138,9 @@ public class ProductController
 		User user = userService.getUserByPhoneNumber(loggedInUser);
 		Long loggedInSellerId = user.getSellerId();
 		
-		Long sellerIdInTheRequest = productInput.getSeller().getSellerId();
+		Product product = productService.findProductByProductUuid(productInput.getUuid());
+		Long sellerIdInTheRequest = product.getSeller().getSellerId();
+		//Long sellerIdInTheRequest = productInput.getSeller().getSellerId();
 		
 		if(loggedInSellerId.compareTo(sellerIdInTheRequest) == 0)
 		{
@@ -149,6 +153,8 @@ public class ProductController
 			throw new Exception("You do not have permission to add new Products for other sellers.");
 		}
 	}
+	
+
 	
 	@Secured(value= {Roles.CUSTOMER_SUPPORT_WRITE_ACCESS, Roles.ADMIN, Roles.SUPER_ADMIN})
 	@MutationMapping

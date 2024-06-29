@@ -1,5 +1,7 @@
 package com.tamilcreations.estorespringboot.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -8,6 +10,10 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.slf4j.MDC;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 public class Utils
 {
@@ -99,4 +105,28 @@ public class Utils
 
         return anyObject;
     }
+	
+	public static File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+		
+		String originalFilename = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+	    System.out.println("MultipartFile File size: " + multipartFile.getSize());
+
+	    // Get the absolute path of the resources folder
+	    //ClassPathResource resource = new ClassPathResource("static"); // assuming static is your resources folder
+	    String uploadDir = "src/main/resources/";
+
+//	    // Ensure the upload directory exists
+//	    if (!uploadDir.exists()) {
+//	    	uploadDir.mkdirs(); // Create the directory if it doesn't exist
+//	    }
+
+	    // Create the file within the specified directory
+	    File file = new File("src/main/resources/", originalFilename);
+
+	    // Use FileCopyUtils to copy the content of the MultipartFile to the created file
+	    FileCopyUtils.copy(multipartFile.getBytes(), file);
+
+	    System.out.println("After conversion, File size: " + file.length());
+	    return file;
+	}
 }
